@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../../core/utils/gradient_helper.dart';
@@ -286,7 +288,13 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                 HapticFeedback.mediumImpact();
                 final image = await controller.capture();
                 if (image != null) {
-                  // Save or share image logic here
+                  final dir = await getTemporaryDirectory();
+                  final file = File('${dir.path}/quotify_share.png');
+                  await file.writeAsBytes(image);
+                  await Share.shareXFiles(
+                    [XFile(file.path)],
+                    text: '"${state.quote!.text}"\n\n— ${state.quote!.author}',
+                  );
                 }
               },
               onFavorite: () {

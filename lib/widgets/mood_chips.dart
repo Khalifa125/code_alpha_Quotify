@@ -9,15 +9,15 @@ import '../services/quote_service.dart';
 class MoodChips extends ConsumerWidget {
   const MoodChips({super.key});
 
-  static const Map<String, String> _moodEmojis = {
-    'All': '✨',
-    'Motivated': '🔥',
-    'Calm': '😌',
-    'Funny': '😂',
-    'Sad': '😢',
-    'Love': '❤️',
-    'Success': '🏆',
-    'Growth': '🌱',
+  static const Map<String, IconData> _moodIcons = {
+    'All': Icons.auto_awesome_rounded,
+    'Motivated': Icons.local_fire_department_rounded,
+    'Calm': Icons.self_improvement_rounded,
+    'Funny': Icons.emoji_emotions_rounded,
+    'Sad': Icons.sentiment_dissatisfied_rounded,
+    'Love': Icons.favorite_rounded,
+    'Success': Icons.emoji_events_rounded,
+    'Growth': Icons.trending_up_rounded,
   };
 
   @override
@@ -40,7 +40,7 @@ class MoodChips extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 10),
             child: _MoodChip(
               label: category,
-              emoji: _moodEmojis[category] ?? '✨',
+              icon: _moodIcons[category] ?? Icons.auto_awesome_rounded,
               isSelected: isSelected,
               isDark: isDark,
               onTap: () {
@@ -58,14 +58,14 @@ class MoodChips extends ConsumerWidget {
 
 class _MoodChip extends StatelessWidget {
   final String label;
-  final String emoji;
+  final IconData icon;
   final bool isSelected;
   final bool isDark;
   final VoidCallback onTap;
 
   const _MoodChip({
     required this.label,
-    required this.emoji,
+    required this.icon,
     required this.isSelected,
     required this.isDark,
     required this.onTap,
@@ -104,9 +104,12 @@ class _MoodChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 16),
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected
+                  ? Colors.white
+                  : (isDark ? Colors.white54 : const Color(0xFF6B7280)),
             ),
             if (isSelected) ...[
               const SizedBox(width: 6),

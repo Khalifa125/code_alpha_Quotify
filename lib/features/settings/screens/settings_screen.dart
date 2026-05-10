@@ -190,12 +190,22 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            'Made with ❤️',
-            style: GoogleFonts.lato(
-              fontSize: 12,
-              color: isDark ? Colors.white38 : const Color(0xFF9B9B9B),
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Made with ',
+                style: GoogleFonts.lato(
+                  fontSize: 12,
+                  color: isDark ? Colors.white38 : const Color(0xFF9B9B9B),
+                ),
+              ),
+              const Icon(
+                Icons.favorite_rounded,
+                size: 12,
+                color: Color(0xFFFF3366),
+              ),
+            ],
           ),
         ],
       ),

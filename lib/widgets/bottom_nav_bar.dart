@@ -71,6 +71,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                   label: 'Favorites',
                   isActive: widget.currentIndex == 1,
                   isDark: isDark,
+                  badgeCount: widget.favoritesCount,
                   onTap: () => widget.onTap(1),
                 ),
                 _NavItem(
@@ -94,6 +95,7 @@ class _NavItem extends StatefulWidget {
   final String label;
   final bool isActive;
   final bool isDark;
+  final int badgeCount;
   final VoidCallback onTap;
 
   const _NavItem({
@@ -102,6 +104,7 @@ class _NavItem extends StatefulWidget {
     required this.isActive,
     required this.isDark,
     required this.onTap,
+    this.badgeCount = 0,
   });
 
   @override
@@ -168,10 +171,41 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                widget.icon,
-                size: 22,
-                color: widget.isActive ? Colors.white : inactiveColor,
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    widget.icon,
+                    size: 22,
+                    color: widget.isActive ? Colors.white : inactiveColor,
+                  ),
+                  if (widget.badgeCount > 0 && !widget.isActive)
+                    Positioned(
+                      right: -8,
+                      top: -6,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFF3366),
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '${widget.badgeCount > 99 ? 99 : widget.badgeCount}',
+                          style: GoogleFonts.lato(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            height: 1,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               if (widget.isActive) ...[
                 const SizedBox(width: 8),

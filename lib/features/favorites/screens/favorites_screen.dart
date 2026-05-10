@@ -344,10 +344,17 @@ class _FavoriteQuoteCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 GestureDetector(
                   onTap: onRemove,
-                  child: Icon(
-                    Icons.favorite_rounded,
-                    size: 20,
-                    color: const Color(0xFFFF3366).withOpacity(0.8),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF3366).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.delete_rounded,
+                      size: 16,
+                      color: Color(0xFFFF3366),
+                    ),
                   ),
                 ),
               ],

@@ -76,11 +76,11 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
 
   final List<Widget> _screens = const [
-    FavoritesScreen(),
     QuoteScreen(),
+    FavoritesScreen(),
     SettingsScreen(),
   ];
 
