@@ -21,19 +21,39 @@ jobs:
         flutter-version: '3.29.0'
         channel: 'stable'
 
+    - name: Cache Flutter dependencies
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/.pub-cache
+          .dart_tool
+        key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pub-
+
+    - name: Cache CocoaPods
+      uses: actions/cache@v5
+      with:
+        path: ios/Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+
     - name: Get dependencies
       run: flutter pub get
 
     - name: Build iOS for Simulator
       run: flutter build ios --simulator --no-codesign
 
-    - name: Build iOS Release (IPA)
-      run: |
-        flutter build ipa --release --no-codesign
+    - name: Build iOS Release App
+      run: flutter build ios --release --no-codesign
 
-    - name: Prepare IPA
+    - name: Package unsigned IPA
       run: |
+        mkdir -p build/ios/ipa/Payload
+        cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
         cd build/ios/ipa
+        zip -r quotify-unsigned.ipa Payload/
         ls -la
 
     - name: Upload IPA
@@ -41,9 +61,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: quotify-ipa
-        path: |
-          build/ios/ipa/*.ipa
-          build/ios/ipa/*.app
+        path: build/ios/ipa/quotify-unsigned.ipa
         retention-days: 30
 
     - name: Upload Simulator App

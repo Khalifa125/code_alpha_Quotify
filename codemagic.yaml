@@ -6,7 +6,6 @@ workflows:
       flutter: 3.29.0
       xcode: latest
       cocoapods: default
-      node: 18
     scripts:
       - name: Get dependencies
         script: |
@@ -18,14 +17,10 @@ workflows:
 
       - name: Build iOS IPA
         script: |
-          flutter build ipa --release --no-codesign --export-options-plist=/Users/builder/export_options.plist
+          flutter build ipa --release
 
-      - name: Fix iOS bundle
-        script: |
-          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string Quotify" ios/Runner/Info.plist || true
     artifacts:
       - build/ios/ipa/*.ipa
-      - build/ios/ipa/*.app
 
   android-build:
     name: Android APK Build
