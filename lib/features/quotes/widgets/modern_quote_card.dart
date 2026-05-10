@@ -86,17 +86,6 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderSt
     setState(() => _dragX = 0);
   }
 
-  void _onVerticalDragEnd(DragEndDetails details) {
-    if (details.velocity.pixelsPerSecond.dy < -500 && !widget.isFavorite) {
-      setState(() => _showHeartBurst = true);
-      _burstController.forward().then((_) {
-        setState(() => _showHeartBurst = false);
-        _burstController.reset();
-        widget.onFavorite();
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -110,7 +99,6 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderSt
       child: GestureDetector(
         onHorizontalDragUpdate: _onHorizontalDragUpdate,
         onHorizontalDragEnd: _onHorizontalDragEnd,
-        onVerticalDragEnd: _onVerticalDragEnd,
         onDoubleTap: () {
           widget.onCopy();
           _showCopyFlash(context);
