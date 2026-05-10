@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/constants/api_constants.dart';
 import '../core/error/exceptions.dart';
 import '../core/error/failures.dart';
-import '../models/quote_model.dart';
+import '../models/quote.dart';
 import '../services/quote_service.dart';
 
 final quoteServiceProvider = Provider<QuoteService>((ref) {
@@ -64,7 +64,8 @@ class QuoteController extends StateNotifier<QuoteState> {
     state = state.copyWith(isLoading: true, clearError: true);
     
     try {
-      final quote = await _service.fetchQuote();
+      final quotes = await _service.fetchQuotes();
+      final quote = quotes.isNotEmpty ? quotes.first : null;
       final newGradientIndex = _random.nextInt(AppConstants.gradientCount);
       
       state = state.copyWith(

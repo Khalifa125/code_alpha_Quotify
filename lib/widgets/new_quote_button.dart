@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/utils/gradient_helper.dart';
 
@@ -37,7 +36,7 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     );
-    _scaleAnimation = Tween<double>(begin: 1, end: 0.95).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
     
@@ -67,9 +66,6 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final colors = GradientHelper.getGradient(widget.gradientIndex);
-
     return GestureDetector(
       onTapDown: widget.isLoading ? null : (_) => _scaleController.forward(),
       onTapUp: widget.isLoading ? null : (_) {
@@ -85,20 +81,16 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 18),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: colors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              gradient: GradientHelper.buttonGradient,
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: colors[0].withValues(alpha: 0.4),
+                  color: GradientHelper.primaryColor.withValues(alpha: 0.45),
                   blurRadius: 24,
                   offset: const Offset(0, 12),
                 ),
                 BoxShadow(
-                  color: colors[1].withValues(alpha: 0.2),
+                  color: GradientHelper.secondaryColor.withValues(alpha: 0.15),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -113,14 +105,14 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : _buildContent(isDark),
+                : _buildContent(),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildContent(bool isDark) {
+  Widget _buildContent() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -146,13 +138,6 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
           size: 18,
         ),
       ],
-    ).animate(
-      target: widget.isLoading ? 0 : 1,
-      autoPlay: false,
-    ).shimmer(
-      duration: 2000.ms,
-      delay: 1500.ms,
-      color: Colors.white.withValues(alpha: 0.3),
     );
   }
 }

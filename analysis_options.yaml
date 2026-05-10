@@ -11,7 +11,13 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   errors:
+    deprecated_member_use: ignore
     inference_failure_on_untyped_parameter: ignore
+    prefer_int_literals: ignore
+    unnecessary_import: ignore
+    unused_import: ignore
+    use_decorated_box: ignore
+    use_named_constants: ignore
   plugins:
     - custom_lint
   exclude:

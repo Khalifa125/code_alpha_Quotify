@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
 
 class GradientHelper {
-  static const List<List<Color>> _gradients = [
-    [Color(0xFF667eea), Color(0xFF764ba2)],
-    [Color(0xFFf093fb), Color(0xFFf5576c)],
-    [Color(0xFF4facfe), Color(0xFF00f2fe)],
-    [Color(0xFF43e97b), Color(0xFF38f9d7)],
-    [Color(0xFFfa709a), Color(0xFFfee140)],
-    [Color(0xFFa8edea), Color(0xFFfed6e3)],
-    [Color(0xFFffecd2), Color(0xFFfcb69f)],
-    [Color(0xFFff9a9e), Color(0xFFfecfef)],
+  static const List<List<Color>> _gradientsLight = [
+    [Color(0xFFE8E0F0), Color(0xFFE0E8F5)],
+    [Color(0xFFF0E6FA), Color(0xFFE8F0FE)],
+    [Color(0xFFE8EEF5), Color(0xFFF0E8F5)],
+    [Color(0xFFF0E8F5), Color(0xFFE8F5F0)],
+    [Color(0xFFE8F0F5), Color(0xFFF5E8F0)],
+    [Color(0xFFF5E8F0), Color(0xFFE8F0F5)],
+    [Color(0xFFE8F5E8), Color(0xFFF0F5E8)],
+    [Color(0xFFF0E8F5), Color(0xFFE8EAF5)],
   ];
 
+  static const List<List<Color>> _gradientsDark = [
+    [Color(0xFF1A1333), Color(0xFF1A2847)],
+    [Color(0xFF251A47), Color(0xFF1F2847)],
+    [Color(0xFF1F2547), Color(0xFF2A1F47)],
+    [Color(0xFF2A1F3D), Color(0xFF1F3D2A)],
+    [Color(0xFF1F3347), Color(0xFF3D2A1F)],
+    [Color(0xFF3D1F2A), Color(0xFF1F2A3D)],
+    [Color(0xFF1F3D33), Color(0xFF2A331F)],
+    [Color(0xFF2A1F47), Color(0xFF1F3347)],
+  ];
+
+  static const Color _primaryPurple = Color(0xFF8B5CF6);
+  static const Color _primaryBlue = Color(0xFF6366F1);
+  static const Color _accentCyan = Color(0xFF22D3EE);
+  static const Color _accentPink = Color(0xFFEC4899);
+
   static List<Color> getGradient(int index) {
-    return _gradients[index % _gradients.length];
+    return _gradientsLight[index % _gradientsLight.length];
+  }
+
+  static List<Color> getGradientForMode(int index, bool isDark) {
+    if (isDark) {
+      return _gradientsDark[index % _gradientsDark.length];
+    }
+    return _gradientsLight[index % _gradientsLight.length];
   }
 
   static LinearGradient backgroundGradient(bool isDark) {
@@ -22,8 +45,8 @@ class GradientHelper {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          Color(0xFF0f0f1a),
-          Color(0xFF1a1a2e),
+          Color(0xFF0F0A1A),
+          Color(0xFF151025),
         ],
       );
     }
@@ -31,17 +54,73 @@ class GradientHelper {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [
-        Color(0xFFF8F9FA),
-        Color(0xFFE8ECEF),
+        Color(0xFFF8F5FC),
+        Color(0xFFEEEDF5),
       ],
     );
   }
+
+  static LinearGradient primaryGradient = const LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      _primaryPurple,
+      _primaryBlue,
+    ],
+  );
+
+  static LinearGradient buttonGradient = const LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFF9F7AEA),
+      Color(0xFF6366F1),
+    ],
+  );
+
+  static LinearGradient activeNavGradient = const LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      _primaryPurple,
+      _primaryBlue,
+    ],
+  );
+
+  static Color get primaryColor => _primaryPurple;
+  static Color get secondaryColor => _primaryBlue;
+  static Color get accentCyan => _accentCyan;
+  static Color get accentPink => _accentPink;
 
   static LinearGradient cardGradient(List<Color> colors, bool isDark) {
     return LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: colors.map((c) => c.withValues(alpha: isDark ? 0.2 : 0.1)).toList(),
+      colors: colors.map((c) => c.withValues(alpha: isDark ? 0.25 : 0.3)).toList(),
     );
+  }
+
+  static Color cardBackground(bool isDark) {
+    return isDark 
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.white.withValues(alpha: 0.92);
+  }
+
+  static Color cardBorder(bool isDark) {
+    return isDark 
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.black.withValues(alpha: 0.05);
+  }
+
+  static Color textPrimary(bool isDark) {
+    return isDark ? Colors.white : const Color(0xFF1E1B2E);
+  }
+
+  static Color textSecondary(bool isDark) {
+    return isDark ? Colors.white70 : const Color(0xFF6B6B7B);
+  }
+
+  static Color textMuted(bool isDark) {
+    return isDark ? Colors.white54 : const Color(0xFF9B9B9B);
   }
 }

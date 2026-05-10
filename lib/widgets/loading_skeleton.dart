@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:shimmer/shimmer.dart';
 
 class LoadingSkeleton extends StatelessWidget {
   const LoadingSkeleton({super.key});
@@ -11,97 +11,44 @@ class LoadingSkeleton extends StatelessWidget {
     final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
     final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
 
-    return Skeletonizer(
-      enabled: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildQuoteMark(baseColor),
+            Container(
+              width: 56, height: 56,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+            ),
             const SizedBox(height: 32),
-            _buildTextLine(width: double.infinity, baseColor: baseColor),
-            const SizedBox(height: 16),
-            _buildTextLine(width: MediaQuery.of(context).size.width * 0.85, baseColor: baseColor),
-            const SizedBox(height: 16),
-            _buildTextLine(width: MediaQuery.of(context).size.width * 0.7, baseColor: baseColor),
-            const SizedBox(height: 16),
-            _buildTextLine(width: MediaQuery.of(context).size.width * 0.5, baseColor: baseColor),
-            const SizedBox(height: 48),
-            _buildAuthorLine(baseColor: baseColor, highlightColor: highlightColor),
-            const SizedBox(height: 48),
-            _buildActionButtons(baseColor: baseColor, highlightColor: highlightColor),
+            Container(width: double.infinity, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+            const SizedBox(height: 14),
+            Container(width: MediaQuery.of(context).size.width * 0.85, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+            const SizedBox(height: 14),
+            Container(width: MediaQuery.of(context).size.width * 0.7, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+            const SizedBox(height: 14),
+            Container(width: MediaQuery.of(context).size.width * 0.5, height: 20, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+            const SizedBox(height: 32),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(width: 24, height: 2, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(1))),
+              const SizedBox(width: 16),
+              Container(width: 80, height: 16, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4))),
+              const SizedBox(width: 16),
+              Container(width: 24, height: 2, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(1))),
+            ]),
+            const SizedBox(height: 40),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(width: 85, height: 44, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16))),
+              const SizedBox(width: 12),
+              Container(width: 85, height: 44, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16))),
+              const SizedBox(width: 12),
+              Container(width: 48, height: 48, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16))),
+            ]),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildQuoteMark(Color baseColor) {
-    return Text(
-      '"',
-      style: GoogleFonts.playfairDisplay(
-        fontSize: 100,
-        fontWeight: FontWeight.bold,
-        color: baseColor.withValues(alpha: 0.3),
-      ),
-    );
-  }
-
-  Widget _buildTextLine({required double width, required Color baseColor}) {
-    return Container(
-      width: width,
-      height: 20,
-      decoration: BoxDecoration(
-        color: baseColor,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
-
-  Widget _buildAuthorLine({required Color baseColor, required Color highlightColor}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 12,
-          height: 2,
-          decoration: BoxDecoration(
-            color: baseColor,
-            borderRadius: BorderRadius.circular(1),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          width: 120,
-          height: 16,
-          decoration: BoxDecoration(
-            color: highlightColor,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButtons({required Color baseColor, required Color highlightColor}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildButtonSkeleton(baseColor),
-        const SizedBox(width: 16),
-        _buildButtonSkeleton(baseColor),
-      ],
-    );
-  }
-
-  Widget _buildButtonSkeleton(Color baseColor) {
-    return Container(
-      width: 100,
-      height: 44,
-      decoration: BoxDecoration(
-        color: baseColor,
-        borderRadius: BorderRadius.circular(22),
       ),
     );
   }

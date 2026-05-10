@@ -52,7 +52,7 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
     );
     _animation = CurvedAnimation(
       parent: _controller,
@@ -78,12 +78,12 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
 
   @override
   Widget build(BuildContext context) {
-    final colors = GradientHelper.getGradient(widget.gradientIndex);
+    final gradientColors = GradientHelper.getGradientForMode(widget.gradientIndex, widget.isDarkMode);
     
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        return DecoratedBox(
+        return Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -91,25 +91,25 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
               colors: widget.isDarkMode
                   ? [
                       Color.lerp(
-                        const Color(0xFF0f0f1a),
-                        colors[0].withValues(alpha: 0.15),
+                        const Color(0xFF0F0A1A),
+                        gradientColors[0].withValues(alpha: 0.35),
                         _animation.value,
                       )!,
                       Color.lerp(
-                        const Color(0xFF1a1a2e),
-                        colors[1].withValues(alpha: 0.1),
+                        const Color(0xFF151025),
+                        gradientColors[1].withValues(alpha: 0.3),
                         _animation.value,
                       )!,
                     ]
                   : [
                       Color.lerp(
-                        const Color(0xFFF8F9FA),
-                        colors[0].withValues(alpha: 0.1),
+                        const Color(0xFFF8F5FC),
+                        gradientColors[0].withValues(alpha: 0.25),
                         _animation.value,
                       )!,
                       Color.lerp(
-                        const Color(0xFFE8ECEF),
-                        colors[1].withValues(alpha: 0.08),
+                        const Color(0xFFEEEDF5),
+                        gradientColors[1].withValues(alpha: 0.2),
                         _animation.value,
                       )!,
                     ],

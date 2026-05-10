@@ -2,15 +2,18 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../core/utils/gradient_helper.dart';
 
 class BottomNavBar extends StatefulWidget {
   final int currentIndex;
   final void Function(int) onTap;
+  final int favoritesCount;
 
   const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    this.favoritesCount = 0,
   });
 
   @override
@@ -23,50 +26,55 @@ class _BottomNavBarState extends State<BottomNavBar> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(20, 8, 20, 20),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
           child: Container(
-            height: 70,
+            height: 72,
             decoration: BoxDecoration(
               color: isDark 
-                  ? Colors.black.withValues(alpha: 0.6)
-                  : Colors.white.withValues(alpha: 0.85),
+                  ? Colors.black.withValues(alpha: 0.65)
+                  : Colors.white.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: isDark 
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.05),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.04),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+                  color: GradientHelper.primaryColor.withValues(alpha: isDark ? 0.15 : 0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _NavItem(
-                  icon: Icons.favorite_border_rounded,
-                  label: 'Favorites',
+                  icon: Icons.format_quote_rounded,
+                  label: 'Quote',
                   isActive: widget.currentIndex == 0,
                   isDark: isDark,
                   onTap: () => widget.onTap(0),
                 ),
                 _NavItem(
-                  icon: Icons.format_quote_rounded,
-                  label: 'Quote',
+                  icon: Icons.favorite_rounded,
+                  label: 'Favorites',
                   isActive: widget.currentIndex == 1,
                   isDark: isDark,
                   onTap: () => widget.onTap(1),
                 ),
                 _NavItem(
-                  icon: Icons.settings_outlined,
+                  icon: Icons.settings_rounded,
                   label: 'Settings',
                   isActive: widget.currentIndex == 2,
                   isDark: isDark,
@@ -111,7 +119,7 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
@@ -124,13 +132,14 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = const Color(0xFF667eea);
+    final inactiveColor = widget.isDark ? Colors.white54 : const Color(0xFF9B9B9B);
+    final activeGradient = GradientHelper.activeNavGradient;
     
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
         _controller.reverse();
-        HapticFeedback.lightImpact();
+        HapticFeedback.selectionClick();
         widget.onTap();
       },
       onTapCancel: () => _controller.reverse(),
@@ -140,29 +149,42 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
           scale: _scaleAnimation.value,
           child: child,
         ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            gradient: widget.isActive ? activeGradient : null,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: widget.isActive
+                ? [
+                    BoxShadow(
+                      color: GradientHelper.primaryColor.withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 widget.icon,
-                size: 24,
-                color: widget.isActive 
-                    ? primaryColor
-                    : (widget.isDark ? Colors.white54 : Colors.black38),
+                size: 22,
+                color: widget.isActive ? Colors.white : inactiveColor,
               ),
-              const SizedBox(height: 4),
-              Text(
-                widget.label,
-                style: GoogleFonts.lato(
-                  fontSize: 11,
-                  fontWeight: widget.isActive ? FontWeight.w600 : FontWeight.w500,
-                  color: widget.isActive 
-                      ? primaryColor
-                      : (widget.isDark ? Colors.white54 : Colors.black38),
+              if (widget.isActive) ...[
+                const SizedBox(width: 8),
+                Text(
+                  widget.label,
+                  style: GoogleFonts.lato(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

@@ -11,9 +11,9 @@ class AppTheme {
         secondary: Color(0xFF764ba2),
         surface: Colors.white,
         onSurface: Color(0xFF1a1a2e),
-        surfaceContainerHighest: Color(0xFFF8F9FA),
+        surfaceContainerHighest: Color(0xFFFAFAFA),
       ),
-      scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+      scaffoldBackgroundColor: const Color(0xFFFFFFFF),
       textTheme: _buildTextTheme(Brightness.light),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,

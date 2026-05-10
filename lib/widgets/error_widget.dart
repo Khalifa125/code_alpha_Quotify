@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../core/error/failures.dart';
+import '../core/utils/gradient_helper.dart';
 
 class QuoteErrorWidget extends StatelessWidget {
-  final Failure failure;
+  final String message;
   final VoidCallback onRetry;
 
   const QuoteErrorWidget({
     super.key,
-    required this.failure,
+    required this.message,
     required this.onRetry,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final mutedColor = GradientHelper.textMuted(isDark);
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -27,74 +28,48 @@ class QuoteErrorWidget extends StatelessWidget {
           const SizedBox(height: 32),
           _buildTitle(context, isDark),
           const SizedBox(height: 12),
-          _buildMessage(context, isDark),
+          _buildMessage(context, isDark, mutedColor),
           const SizedBox(height: 32),
           _buildRetryButton(isDark),
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms).scale(
-      begin: const Offset(0.95, 0.95),
-      duration: 400.ms,
-    );
+    ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.95, 0.95), duration: 400.ms);
   }
 
   Widget _buildIllustration(bool isDark) {
     return Container(
-      width: 120,
-      height: 120,
+      width: 100,
+      height: 100,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isDark 
-            ? Colors.white.withValues(alpha: 0.05)
-            : Colors.grey.withValues(alpha: 0.1),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
       ),
       child: Icon(
-        _getIcon(),
-        size: 56,
-        color: isDark ? Colors.white38 : Colors.black26,
+        Icons.wifi_off_rounded,
+        size: 48,
+        color: isDark ? Colors.white38 : const Color(0xFF9B9B9B),
       ),
-    ).animate().fadeIn(delay: 200.ms, duration: 500.ms).scale(
-      begin: const Offset(0.8, 0.8),
-      duration: 500.ms,
-    );
-  }
-
-  IconData _getIcon() {
-    if (failure is NetworkFailure || failure is TimeoutFailure) {
-      return Icons.wifi_off_rounded;
-    } else if (failure is ApiKeyFailure) {
-      return Icons.key_off_rounded;
-    }
-    return Icons.error_outline_rounded;
+    ).animate().fadeIn(delay: 200.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8), duration: 500.ms);
   }
 
   Widget _buildTitle(BuildContext context, bool isDark) {
+    final textColor = GradientHelper.textPrimary(isDark);
     return Text(
-      _getTitle(),
+      'Connection Issue',
       style: GoogleFonts.playfairDisplay(
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: FontWeight.w600,
-        color: isDark ? Colors.white : const Color(0xFF1a1a2e),
+        color: textColor,
       ),
-      textAlign: TextAlign.center,
     ).animate().fadeIn(delay: 300.ms, duration: 400.ms);
   }
 
-  String _getTitle() {
-    if (failure is NetworkFailure || failure is TimeoutFailure) {
-      return 'Connection Issue';
-    } else if (failure is ApiKeyFailure) {
-      return 'Setup Required';
-    }
-    return 'Something Went Wrong';
-  }
-
-  Widget _buildMessage(BuildContext context, bool isDark) {
+  Widget _buildMessage(BuildContext context, bool isDark, Color mutedColor) {
     return Text(
-      failure.message,
+      message,
       style: GoogleFonts.lato(
         fontSize: 14,
-        color: isDark ? Colors.white54 : const Color(0xFF6b7280),
+        color: mutedColor,
         height: 1.5,
       ),
       textAlign: TextAlign.center,
@@ -110,13 +85,11 @@ class QuoteErrorWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-          ),
-          borderRadius: BorderRadius.circular(30),
+          gradient: GradientHelper.buttonGradient,
+          borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF667eea).withValues(alpha: 0.4),
+              color: GradientHelper.primaryColor.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -125,11 +98,7 @@ class QuoteErrorWidget extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.refresh_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
+            const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
             const SizedBox(width: 8),
             Text(
               'Try Again',
