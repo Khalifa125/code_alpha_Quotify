@@ -125,7 +125,7 @@ class QuoteService {
       } catch (_) {
         if (i < _maxRetries - 1) {
           final delay = Duration(milliseconds: 200 * (i + 1));
-          await Future.delayed(delay);
+          await Future<void>.delayed(delay);
         }
       }
     }
