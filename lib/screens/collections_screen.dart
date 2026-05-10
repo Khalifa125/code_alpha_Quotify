@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/utils/gradient_helper.dart';
 import '../models/collection.dart';
+import '../models/quote.dart';
 import '../providers.dart';
 
 class CollectionsScreen extends ConsumerStatefulWidget {
@@ -160,7 +161,7 @@ class _CollectionsScreenState extends ConsumerState<CollectionsScreen> {
 
   void _showCreateDialog(BuildContext context, bool isDark) {
     final controller = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: isDark ? const Color(0xFF1A1333) : Colors.white,
@@ -204,9 +205,9 @@ class _CollectionsScreenState extends ConsumerState<CollectionsScreen> {
   }
 
   void _openCollection(BuildContext context, Collection collection) {
-    Navigator.push(
+    Navigator.push<void>(
       context,
-      PageRouteBuilder(
+      PageRouteBuilder<void>(
         pageBuilder: (context, animation, secondaryAnimation) =>
             _CollectionDetailScreen(collection: collection),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -314,7 +315,7 @@ class _CollectionDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuotesList(BuildContext context, bool isDark, List favorites) {
+  Widget _buildQuotesList(BuildContext context, bool isDark, List<Quote> favorites) {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
       physics: const BouncingScrollPhysics(),
@@ -462,7 +463,7 @@ class _CollectionCard extends StatelessWidget {
   }
 
   void _showDeleteDialog(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Delete Collection?', style: GoogleFonts.lato(fontWeight: FontWeight.w600)),

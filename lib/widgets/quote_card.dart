@@ -212,7 +212,7 @@ class _QuoteCardState extends State<QuoteCard> with TickerProviderStateMixin {
 
   void _showQuickActions(BuildContext context) {
     HapticFeedback.mediumImpact();
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => _QuickActionSheet(

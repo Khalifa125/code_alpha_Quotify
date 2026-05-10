@@ -13,7 +13,6 @@ class QuoteService {
   static const Duration _timeout = Duration(seconds: 4);
   static const int _maxRetries = 2;
   static const String _cacheKey = 'cached_quote';
-  static const String _cacheListKey = 'cached_quotes_list';
   static const int _cacheLimit = 10;
 
   final List<Quote> _quoteCache = [];
@@ -125,7 +124,8 @@ class QuoteService {
         if (quote != null) return quote;
       } catch (_) {
         if (i < _maxRetries - 1) {
-          await Future.delayed(Duration(milliseconds: 200 * (i + 1)));
+          final delay = Duration(milliseconds: 200 * (i + 1));
+          await Future.delayed(delay);
         }
       }
     }
@@ -239,12 +239,4 @@ class QuoteService {
   void dispose() {
     _client.close();
   }
-}
-
-Quote _parseQuoteFromJson(Map<String, dynamic> json) {
-  return Quote(
-    text: json['text'] ?? '',
-    author: json['author'] ?? 'Unknown',
-    category: json['category'] ?? 'Motivated',
-  );
 }
