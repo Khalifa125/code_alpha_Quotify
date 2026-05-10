@@ -3,7 +3,7 @@ workflows:
     name: iOS IPA Build
     max_build_duration: 120
     environment:
-      flutter: stable
+      flutter: 3.29.0
       xcode: latest
       cocoapods: default
       node: 18
@@ -31,7 +31,7 @@ workflows:
     name: Android APK Build
     max_build_duration: 60
     environment:
-      flutter: stable
+      flutter: 3.29.0
       android-sdk: latest
     scripts:
       - name: Get dependencies
@@ -49,7 +49,7 @@ workflows:
     name: Web Build
     max_build_duration: 60
     environment:
-      flutter: stable
+      flutter: 3.29.0
     scripts:
       - name: Get dependencies
         script: |
