@@ -26,6 +26,7 @@ class QuoteScreen extends ConsumerStatefulWidget {
 
 class _QuoteScreenState extends ConsumerState<QuoteScreen> {
   final _searchController = TextEditingController();
+  final _screenshotController = ScreenshotController();
   bool _isSearching = false;
   Timer? _debounce;
 
@@ -49,7 +50,6 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSmallHeight = MediaQuery.of(context).size.height < 600;
     final showSwipeHint = ref.watch(showSwipeHintProvider);
-    final screenshotController = ScreenshotController();
 
     return SafeArea(
       child: LayoutBuilder(
@@ -69,9 +69,9 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                       color: GradientHelper.primaryColor,
                       backgroundColor: isDark ? const Color(0xFF1A1333) : Colors.white,
                       child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: _buildContent(context, ref, state, isDark, isSmallHeight, screenshotController),
+                        child: _buildContent(context, ref, state, isDark, isSmallHeight, _screenshotController),
                       ),
                     ),
                   ),

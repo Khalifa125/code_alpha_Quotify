@@ -72,7 +72,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: CustomScrollView(
+      body: SafeArea(
+        child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         controller: _scrollController,
         slivers: [
           SliverPadding(
@@ -125,6 +127,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                   ),
           ),
         ],
+      ),
       ),
     );
   }
