@@ -11,6 +11,8 @@ import 'package:screenshot/screenshot.dart';
 import '../../../../core/utils/gradient_helper.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../providers.dart';
+import '../../../../models/quote.dart';
+import '../../../../models/collection.dart';
 import '../../../../widgets/error_widget.dart';
 import '../../../../widgets/loading_skeleton.dart';
 import '../../../../widgets/mood_chips.dart';
@@ -40,7 +42,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      ref.read(searchQueryProvider.notifier).state = value;
+      ref.read(quoteSearchQueryProvider.notifier).state = value;
     });
   }
 
@@ -196,8 +198,9 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
               setState(() {
                 _isSearching = false;
                 _searchController.clear();
-                ref.read(searchQueryProvider.notifier).state = '';
+                ref.read(quoteSearchQueryProvider.notifier).state = '';
               });
+              FocusScope.of(context).unfocus();
             },
             child: Icon(Icons.close_rounded, color: isDark ? Colors.white54 : Colors.black45, size: 20),
           ),
@@ -301,6 +304,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                 ref.read(favoritesProvider.notifier).toggleFavorite(state.quote!);
                 HapticFeedback.lightImpact();
               },
+              onAddToCollection: () => _showCollectionDialog(context, ref, state.quote!),
               onNext: () => ref.read(quoteControllerProvider.notifier).nextQuote(),
               onPrevious: () => ref.read(quoteControllerProvider.notifier).previousQuote(),
               isFavorite: isFavorite,
@@ -324,6 +328,176 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         gradientIndex: state.gradientIndex,
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 600.ms).slideY(begin: 0.2);
+  }
+
+  void _showCollectionDialog(BuildContext context, WidgetRef ref, Quote quote) {
+    final collections = ref.read(collectionsProvider);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _CollectionPickerSheet(
+        collections: collections,
+        isDark: Theme.of(context).brightness == Brightness.dark,
+        onSelect: (collectionId) {
+          ref.read(collectionsProvider.notifier).addQuoteToCollection(
+            collectionId,
+            quote.text.hashCode.toString(),
+          );
+          Navigator.pop(context);
+          HapticFeedback.lightImpact();
+        },
+        onCreateNew: () {
+          Navigator.pop(context);
+          _showCreateCollectionDialog(context, ref, quote);
+        },
+      ),
+    );
+  }
+
+  void _showCreateCollectionDialog(BuildContext context, WidgetRef ref, Quote quote) {
+    final nameController = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1A1333) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('New Collection',
+          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600)),
+        content: TextField(
+          controller: nameController,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: 'Collection name',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              if (name.isNotEmpty) {
+                await ref.read(collectionsProvider.notifier).createCollection(name);
+                final collections = ref.read(collectionsProvider);
+                if (collections.isNotEmpty) {
+                  await ref.read(collectionsProvider.notifier).addQuoteToCollection(
+                    collections.last.id,
+                    quote.text.hashCode.toString(),
+                  );
+                }
+                HapticFeedback.lightImpact();
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: Text('Create',
+              style: TextStyle(color: GradientHelper.primaryColor)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CollectionPickerSheet extends StatelessWidget {
+  final List<Collection> collections;
+  final bool isDark;
+  final void Function(String) onSelect;
+  final VoidCallback onCreateNew;
+
+  const _CollectionPickerSheet({
+    required this.collections,
+    required this.isDark,
+    required this.onSelect,
+    required this.onCreateNew,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A1333) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(width: 40, height: 4,
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white24 : Colors.black12,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text('Add to Collection',
+            style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : const Color(0xFF1E1B2E)),
+          ),
+          const SizedBox(height: 16),
+          if (collections.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Text('No collections yet',
+                style: GoogleFonts.lato(color: isDark ? Colors.white38 : Colors.black45)),
+            )
+          else
+            ...collections.map((c) => GestureDetector(
+              onTap: () => onSelect(c.id),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(children: [
+                  Icon(Icons.collections_bookmark_rounded, size: 20,
+                    color: GradientHelper.primaryColor),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(c.name,
+                    style: GoogleFonts.lato(fontWeight: FontWeight.w500,
+                      color: isDark ? Colors.white70 : Colors.black87))),
+                  Text('${c.quoteIds.length}',
+                    style: GoogleFonts.lato(color: isDark ? Colors.white38 : Colors.black45)),
+                ]),
+              ),
+            )),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: onCreateNew,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                gradient: GradientHelper.primaryGradient,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Center(child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.add_rounded, color: Colors.white, size: 18),
+                  const SizedBox(width: 6),
+                  Text('New Collection',
+                    style: GoogleFonts.lato(fontWeight: FontWeight.w600, color: Colors.white)),
+                ],
+              )),
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+        ],
+      ),
+    );
   }
 }
 

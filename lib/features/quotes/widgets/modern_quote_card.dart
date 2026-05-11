@@ -19,6 +19,7 @@ class ModernQuoteCard extends StatefulWidget {
   final VoidCallback onShare;
   final VoidCallback onShareImage;
   final VoidCallback onFavorite;
+  final VoidCallback onAddToCollection;
   final VoidCallback onNext;
   final VoidCallback onPrevious;
   final bool isFavorite;
@@ -33,6 +34,7 @@ class ModernQuoteCard extends StatefulWidget {
     required this.onShare,
     required this.onShareImage,
     required this.onFavorite,
+    required this.onAddToCollection,
     required this.onNext,
     required this.onPrevious,
     required this.isFavorite,
@@ -374,6 +376,10 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderSt
           Navigator.pop(context);
           widget.onFavorite();
         },
+        onAddToCollection: () {
+          Navigator.pop(context);
+          widget.onAddToCollection();
+        },
         isFavorite: widget.isFavorite,
         isDark: Theme.of(context).brightness == Brightness.dark,
       ),
@@ -483,6 +489,7 @@ class _QuickActionSheet extends StatelessWidget {
   final VoidCallback onShare;
   final VoidCallback onSaveImage;
   final VoidCallback onFavorite;
+  final VoidCallback onAddToCollection;
   final bool isFavorite;
   final bool isDark;
 
@@ -491,6 +498,7 @@ class _QuickActionSheet extends StatelessWidget {
     required this.onShare,
     required this.onSaveImage,
     required this.onFavorite,
+    required this.onAddToCollection,
     required this.isFavorite,
     required this.isDark,
   });
@@ -559,6 +567,12 @@ class _QuickActionSheet extends StatelessWidget {
                 onTap: onFavorite,
                 isDark: isDark,
                 isActive: isFavorite,
+              ),
+              _ActionButton(
+                icon: Icons.collections_bookmark_rounded,
+                label: 'Collection',
+                onTap: onAddToCollection,
+                isDark: isDark,
               ),
             ],
           ),

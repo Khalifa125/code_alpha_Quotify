@@ -231,11 +231,22 @@ class QuoteService {
     )).toList();
   }
 
+  static const Map<String, String> _categoryTags = {
+    'Motivated': 'motivation',
+    'Calm': 'calm',
+    'Funny': 'humor',
+    'Sad': 'sadness',
+    'Love': 'love',
+    'Success': 'success',
+    'Growth': 'growth',
+  };
+
   Future<List<Quote>> fetchByCategory(String category) async {
     if (category == 'All') return fetchQuotes();
     final offline = _getOfflineQuotes().where((q) => q.category == category).toList();
+    final tag = _categoryTags[category] ?? category.toLowerCase();
     try {
-      final url = '${_quotableUrl.replaceAll('/random', '/quotes/random')}?tags=${category.toLowerCase()}';
+      final url = '$_quotableUrl?tags=$tag';
       final response = await _client.get(Uri.parse(url)).timeout(_timeout);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -251,6 +262,13 @@ class QuoteService {
         }
       }
     } catch (_) {}
+    if (offline.isEmpty) {
+      final allQuotes = await fetchQuotes();
+      if (allQuotes.isNotEmpty) {
+        final quote = allQuotes.first;
+        return [Quote(text: quote.text, author: quote.author, category: category)];
+      }
+    }
     return offline;
   }
 

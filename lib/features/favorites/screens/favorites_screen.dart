@@ -53,14 +53,14 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      ref.read(searchQueryProvider.notifier).state = value;
+      ref.read(favoritesSearchQueryProvider.notifier).state = value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final favorites = ref.watch(favoritesProvider);
-    final searchQuery = ref.watch(searchQueryProvider);
+    final searchQuery = ref.watch(favoritesSearchQueryProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final filteredFavorites = () {
@@ -241,8 +241,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
               setState(() {
                 _isSearching = false;
                 _searchController.clear();
-                ref.read(searchQueryProvider.notifier).state = '';
+                ref.read(favoritesSearchQueryProvider.notifier).state = '';
               });
+              FocusScope.of(context).unfocus();
             },
             child: Icon(Icons.close_rounded, color: isDark ? Colors.white54 : Colors.black45, size: 20),
           ),

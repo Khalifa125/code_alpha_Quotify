@@ -90,6 +90,13 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
               _SettingsSection(
+                title: 'Collections',
+                children: [
+                  _CollectionsTile(isDark: isDark),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _SettingsSection(
                 title: 'About',
                 children: [
                   _SettingsTile(
@@ -515,6 +522,233 @@ class _TimePickerTile extends StatelessWidget {
                 color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
           ),
         ]),
+      ),
+    );
+  }
+}
+
+class _CollectionsTile extends ConsumerWidget {
+  final bool isDark;
+
+  const _CollectionsTile({required this.isDark});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final collections = ref.watch(collectionsProvider);
+    return GestureDetector(
+      onTap: () => _showCollectionsSheet(context, ref),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF9F7AEA), Color(0xFF6366F1)],
+              ),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(Icons.collections_bookmark_rounded, color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 16),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('Collections',
+                style: GoogleFonts.lato(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white : const Color(0xFF1E1B2E),
+                )),
+            const SizedBox(height: 2),
+            Text('${collections.length} collections — ${collections.fold(0, (sum, c) => sum + c.quoteIds.length)} quotes',
+                style: GoogleFonts.lato(
+                  fontSize: 13,
+                  color: isDark ? Colors.white54 : const Color(0xFF6B6B7B),
+                )),
+          ])),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.chevron_right_rounded,
+                color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  void _showCollectionsSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _CollectionsManageSheet(isDark: isDark),
+    );
+  }
+}
+
+class _CollectionsManageSheet extends ConsumerWidget {
+  final bool isDark;
+
+  const _CollectionsManageSheet({required this.isDark});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final collections = ref.watch(collectionsProvider);
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A1333) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(width: 40, height: 4,
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white24 : Colors.black12,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text('Manage Collections',
+            style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : const Color(0xFF1E1B2E)),
+          ),
+          const SizedBox(height: 16),
+          if (collections.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Column(children: [
+                Icon(Icons.collections_bookmark_rounded, size: 48,
+                  color: isDark ? Colors.white24 : Colors.black12),
+                const SizedBox(height: 12),
+                Text('No collections yet',
+                  style: GoogleFonts.lato(color: isDark ? Colors.white38 : Colors.black45)),
+              ]),
+            )
+          else
+            ...collections.map((c) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(children: [
+                Icon(Icons.collections_bookmark_rounded, size: 20,
+                  color: GradientHelper.primaryColor),
+                const SizedBox(width: 12),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(c.name, style: GoogleFonts.lato(fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white70 : Colors.black87)),
+                  Text('${c.quoteIds.length} quotes',
+                    style: GoogleFonts.lato(fontSize: 12,
+                      color: isDark ? Colors.white38 : Colors.black45)),
+                ])),
+                GestureDetector(
+                  onTap: () {
+                    ref.read(collectionsProvider.notifier).deleteCollection(c.id);
+                    HapticFeedback.lightImpact();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF3366).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.delete_rounded, size: 16, color: Color(0xFFFF3366)),
+                  ),
+                ),
+              ]),
+            )),
+          if (collections.isNotEmpty) const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+              _showCreateCollectionDialog(context, ref);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                gradient: GradientHelper.primaryGradient,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Center(child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.add_rounded, color: Colors.white, size: 18),
+                  const SizedBox(width: 6),
+                  Text('New Collection',
+                    style: GoogleFonts.lato(fontWeight: FontWeight.w600, color: Colors.white)),
+                ],
+              )),
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+        ],
+      ),
+    );
+  }
+
+  void _showCreateCollectionDialog(BuildContext context, WidgetRef ref) {
+    final nameController = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1A1333) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('New Collection',
+          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600)),
+        content: TextField(
+          controller: nameController,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Collection name',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              if (name.isNotEmpty) {
+                await ref.read(collectionsProvider.notifier).createCollection(name);
+                HapticFeedback.lightImpact();
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: Text('Create',
+              style: TextStyle(color: GradientHelper.primaryColor)),
+          ),
+        ],
       ),
     );
   }
