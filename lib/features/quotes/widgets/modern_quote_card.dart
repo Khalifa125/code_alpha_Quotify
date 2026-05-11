@@ -322,11 +322,11 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderSt
         _FavoriteButton(
           isFavorite: widget.isFavorite,
           onTap: () {
+            widget.onFavorite();
             setState(() => _showHeartBurst = true);
             _burstController.forward().then((_) {
               setState(() => _showHeartBurst = false);
               _burstController.reset();
-              widget.onFavorite();
             });
           },
           isDark: isDark,
@@ -671,50 +671,64 @@ class _FavoriteButtonState extends State<_FavoriteButton> with SingleTickerProvi
         HapticFeedback.mediumImpact();
         widget.onTap();
       },
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) => Transform.scale(
-          scale: _scaleAnimation.value,
-          child: child,
-        ),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            gradient: isActive
-                ? const LinearGradient(
-                    colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)],
-                  )
-                : null,
-            color: isActive
-                ? null
-                : (widget.isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04)),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isActive
-                  ? Colors.transparent
-                  : (widget.isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05)),
+      child: Column(
+        children: [
+          AnimatedBuilder(
+            animation: _scaleAnimation,
+            builder: (context, child) => Transform.scale(
+              scale: _scaleAnimation.value,
+              child: child,
             ),
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: const Color(0xFFFF3366).withOpacity(0.5),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                  ]
-                : null,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: isActive
+                    ? const LinearGradient(
+                        colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)],
+                      )
+                    : null,
+                color: isActive
+                    ? null
+                    : (widget.isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04)),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isActive
+                      ? Colors.transparent
+                      : (widget.isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05)),
+                ),
+                boxShadow: isActive
+                    ? [
+                        BoxShadow(
+                          color: const Color(0xFFFF3366).withOpacity(0.5),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Icon(
+                isActive ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                size: 26,
+                color: isActive
+                    ? Colors.white
+                    : (widget.isDark ? Colors.white54 : const Color(0xFF9B9B9B)),
+              ),
+            ),
           ),
-          child: Icon(
-            isActive ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            size: 26,
-            color: isActive
-                ? Colors.white
-                : (widget.isDark ? Colors.white54 : const Color(0xFF9B9B9B)),
+          const SizedBox(height: 8),
+          Text(
+            isActive ? 'Saved' : 'Save',
+            style: GoogleFonts.lato(
+              fontSize: 12,
+              color: isActive
+                  ? const Color(0xFFFF3366)
+                  : (widget.isDark ? Colors.white54 : Colors.black45),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
