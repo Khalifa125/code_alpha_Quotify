@@ -232,8 +232,26 @@ class QuoteService {
   }
 
   Future<List<Quote>> fetchByCategory(String category) async {
-    if (category == 'All') return _getOfflineQuotes();
-    return _getOfflineQuotes().where((q) => q.category == category).toList();
+    if (category == 'All') return fetchQuotes();
+    final offline = _getOfflineQuotes().where((q) => q.category == category).toList();
+    try {
+      final url = '${_quotableUrl.replaceAll('/random', '/quotes/random')}?tags=${category.toLowerCase()}';
+      final response = await _client.get(Uri.parse(url)).timeout(_timeout);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final results = data is List ? data : (data['results'] ?? [data]);
+        if (results.isNotEmpty) {
+          final quote = Quote(
+            text: results[0]['content'] ?? results[0]['q'] ?? '',
+            author: results[0]['author'] ?? 'Unknown',
+            category: category,
+          );
+          _addToCache(quote);
+          return [quote, ...offline.where((q) => q.text != quote.text)];
+        }
+      }
+    } catch (_) {}
+    return offline;
   }
 
   void dispose() {

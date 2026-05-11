@@ -12,7 +12,8 @@ import '../../../../core/utils/gradient_helper.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../models/quote.dart';
 import '../../../../providers.dart';
-import '../../../widgets/loading_skeleton.dart';
+
+enum SortOrder { newest, oldest, author, category }
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
@@ -24,6 +25,7 @@ class FavoritesScreen extends ConsumerStatefulWidget {
 class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isSearching = false;
+  SortOrder _sortOrder = SortOrder.newest;
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
 
@@ -61,14 +63,30 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     final searchQuery = ref.watch(searchQueryProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final filteredFavorites = searchQuery.isEmpty
-        ? favorites
-        : favorites.where((q) {
-            final query = searchQuery.toLowerCase();
-            return q.text.toLowerCase().contains(query) ||
-                q.author.toLowerCase().contains(query) ||
-                q.category.toLowerCase().contains(query);
-          }).toList();
+    final filteredFavorites = () {
+      var result = searchQuery.isEmpty
+          ? favorites
+          : favorites.where((q) {
+              final query = searchQuery.toLowerCase();
+              return q.text.toLowerCase().contains(query) ||
+                  q.author.toLowerCase().contains(query) ||
+                  q.category.toLowerCase().contains(query);
+            }).toList();
+      switch (_sortOrder) {
+        case SortOrder.newest:
+          break;
+        case SortOrder.oldest:
+          result = result.reversed.toList();
+          break;
+        case SortOrder.author:
+          result = List.from(result)..sort((a, b) => a.author.compareTo(b.author));
+          break;
+        case SortOrder.category:
+          result = List.from(result)..sort((a, b) => a.category.compareTo(b.category));
+          break;
+      }
+      return result;
+    }();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -175,9 +193,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
             const SizedBox(width: 8),
             _HeaderButton(
               icon: Icons.sort_rounded,
-              onTap: () {
-                // Sort functionality
-              },
+              onTap: () => _showSortSheet(isDark),
               isDark: isDark,
             ),
           ],
@@ -277,6 +293,149 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showSortSheet(bool isDark) {
+    HapticFeedback.mediumImpact();
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _SortSheet(
+        currentSort: _sortOrder,
+        isDark: isDark,
+        onSortChanged: (order) {
+          Navigator.pop(context);
+          setState(() => _sortOrder = order);
+        },
+      ),
+    );
+  }
+}
+
+class _SortSheet extends StatelessWidget {
+  final SortOrder currentSort;
+  final bool isDark;
+  final void Function(SortOrder) onSortChanged;
+
+  const _SortSheet({
+    required this.currentSort,
+    required this.isDark,
+    required this.onSortChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A1333) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white24 : Colors.black12,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Sort Favorites',
+            style: GoogleFonts.lato(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : const Color(0xFF1E1B2E),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...SortOrder.values.map((order) => _SortOption(
+            order: order,
+            isSelected: order == currentSort,
+            isDark: isDark,
+            onTap: () => onSortChanged(order),
+          )),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+        ],
+      ),
+    );
+  }
+}
+
+class _SortOption extends StatelessWidget {
+  final SortOrder order;
+  final bool isSelected;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _SortOption({
+    required this.order,
+    required this.isSelected,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  IconData get _icon {
+    switch (order) {
+      case SortOrder.newest: return Icons.access_time_rounded;
+      case SortOrder.oldest: return Icons.history_rounded;
+      case SortOrder.author: return Icons.sort_by_alpha_rounded;
+      case SortOrder.category: return Icons.category_rounded;
+    }
+  }
+
+  String get _label {
+    switch (order) {
+      case SortOrder.newest: return 'Newest First';
+      case SortOrder.oldest: return 'Oldest First';
+      case SortOrder.author: return 'By Author';
+      case SortOrder.category: return 'By Category';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: GestureDetector(
+        onTap: () { HapticFeedback.selectionClick(); onTap(); },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            gradient: isSelected ? GradientHelper.primaryGradient : null,
+            color: isSelected ? null : (isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03)),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Row(
+            children: [
+              Icon(_icon, size: 20,
+                color: isSelected ? Colors.white : (isDark ? Colors.white54 : Colors.black45)),
+              const SizedBox(width: 12),
+              Text(_label, style: GoogleFonts.lato(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+              )),
+              const Spacer(),
+              if (isSelected)
+                const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1,20 +1,15 @@
-// ignore_for_file: unused_import
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'core/utils/gradient_helper.dart';
-import 'features/quotes/screens/quote_screen.dart';
-import 'features/favorites/screens/favorites_screen.dart';
-import 'features/settings/screens/settings_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'features/onboarding/screens/onboarding_screen.dart';
+import 'screens/main_screen.dart';
 import 'providers.dart';
 import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
-import 'widgets/bottom_nav_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +33,12 @@ void main() async {
     _initNotificationService(),
   ]);
 
-  runApp(const ProviderScope(child: QuotifyApp()));
+  final prefs = await SharedPreferences.getInstance();
+  final onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
+
+  runApp(ProviderScope(
+    child: QuotifyApp(showOnboarding: !onboardingComplete),
+  ));
 }
 
 Future<void> _initNotificationService() async {
@@ -48,7 +48,9 @@ Future<void> _initNotificationService() async {
 }
 
 class QuotifyApp extends ConsumerWidget {
-  const QuotifyApp({super.key});
+  final bool showOnboarding;
+
+  const QuotifyApp({super.key, this.showOnboarding = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,58 +64,10 @@ class QuotifyApp extends ConsumerWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeMode,
-        home: const MainScreen(),
-      ),
-    );
-  }
-}
-
-class MainScreen extends ConsumerStatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  ConsumerState<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends ConsumerState<MainScreen> {
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = const [
-    QuoteScreen(),
-    FavoritesScreen(),
-    SettingsScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final favorites = ref.watch(favoritesProvider);
-
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: isDark
-              ? const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF0F0A1A), Color(0xFF151025)],
-                )
-              : const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFFF8F5FC), Color(0xFFEEEDF5)],
-                ),
-        ),
-        child: IndexedStack(
-          index: _currentIndex,
-          children: _screens,
-        ),
-      ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        favoritesCount: favorites.length,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
+        initialRoute: showOnboarding ? '/onboarding' : '/home',
+        routes: {
+          '/onboarding': (context) => const OnboardingScreen(),
+          '/home': (context) => const MainScreen(),
         },
       ),
     );
