@@ -46,3 +46,8 @@ app.*.map.json
 
 # Screenshots
 *.png
+
+# External projects
+opencode-mobile/
+opencode-server/
+node_modules/
