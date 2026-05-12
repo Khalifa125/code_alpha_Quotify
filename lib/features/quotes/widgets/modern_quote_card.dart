@@ -1,6 +1,5 @@
-// ignore_for_file: deprecated_member_use, inference_failure_on_function_invocation, unused_import
+// ignore_for_file: deprecated_member_use
 
-import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,31 +45,8 @@ class ModernQuoteCard extends StatefulWidget {
   State<ModernQuoteCard> createState() => _ModernQuoteCardState();
 }
 
-class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderStateMixin {
+class _ModernQuoteCardState extends State<ModernQuoteCard> {
   double _dragX = 0;
-  bool _showHeartBurst = false;
-  late AnimationController _burstController;
-  late AnimationController _slideController;
-
-  @override
-  void initState() {
-    super.initState();
-    _burstController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-    _slideController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-  }
-
-  @override
-  void dispose() {
-    _burstController.dispose();
-    _slideController.dispose();
-    super.dispose();
-  }
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     setState(() {
@@ -110,83 +86,69 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderSt
           duration: const Duration(milliseconds: 100),
           transform: Matrix4.identity()..translate(_dragX, 0),
           transformAlignment: Alignment.center,
-          child: Stack(
-            children: [
-              // Main Card
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(32),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            GradientHelper.cardBackground(isDark),
-                            GradientHelper.cardBackground(isDark).withOpacity(0.6),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(32),
-                        border: Border.all(
-                          color: GradientHelper.cardBorder(isDark),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: gradientColors[0].withOpacity(isDark ? 0.3 : 0.15),
-                            blurRadius: 40,
-                            offset: const Offset(0, 20),
-                            spreadRadius: -5,
-                          ),
-                          BoxShadow(
-                            color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        GradientHelper.cardBackground(isDark),
+                        GradientHelper.cardBackground(isDark).withOpacity(0.6),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(32),
+                    border: Border.all(
+                      color: GradientHelper.cardBorder(isDark),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: gradientColors[0].withOpacity(isDark ? 0.3 : 0.15),
+                        blurRadius: 40,
+                        offset: const Offset(0, 20),
+                        spreadRadius: -5,
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: widget.isSmallScreen ? 28 : 40,
-                          vertical: widget.isSmallScreen ? 36 : 52,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildQuoteIcon(gradientColors, isDark),
-                            const SizedBox(height: 32),
-                            _buildQuoteText(textColor, isDark),
-                            const SizedBox(height: 36),
-                            _buildDivider(gradientColors),
-                            const SizedBox(height: 28),
-                            _buildAuthorInfo(secondaryColor, mutedColor, isDark),
-                            const SizedBox(height: 40),
-                            _buildActionButtons(isDark),
-                          ],
-                        ),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
                       ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: widget.isSmallScreen ? 28 : 40,
+                      vertical: widget.isSmallScreen ? 36 : 52,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildQuoteIcon(gradientColors, isDark),
+                        const SizedBox(height: 32),
+                        _buildQuoteText(textColor, isDark),
+                        const SizedBox(height: 36),
+                        _buildDivider(gradientColors),
+                        const SizedBox(height: 28),
+                        _buildAuthorInfo(secondaryColor, mutedColor, isDark),
+                        const SizedBox(height: 40),
+                        _buildActionButtons(isDark),
+                      ],
                     ),
                   ),
                 ),
-              ).animate().fadeIn(duration: 600.ms).scale(
-                    begin: const Offset(0.95, 0.95),
-                    curve: Curves.easeOutCubic,
-                    duration: 500.ms,
-                  ),
-              // Heart Burst Animation
-              if (_showHeartBurst)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: Center(
-                      child: _HeartBurstAnimation(controller: _burstController),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+              ),
+            ),
+          ).animate().fadeIn(duration: 600.ms).scale(
+                begin: const Offset(0.95, 0.95),
+                curve: Curves.easeOutCubic,
+                duration: 500.ms,
+              ),
         ),
       ),
     );
@@ -321,16 +283,9 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderSt
           isDark: isDark,
         ),
         const SizedBox(width: 12),
-        _FavoriteButton(
+        FavoriteButtonWidget(
           isFavorite: widget.isFavorite,
-          onTap: () {
-            widget.onFavorite();
-            setState(() => _showHeartBurst = true);
-            _burstController.forward().then((_) {
-              setState(() => _showHeartBurst = false);
-              _burstController.reset();
-            });
-          },
+          onTap: widget.onFavorite,
           isDark: isDark,
         ),
       ],
@@ -383,66 +338,6 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> with TickerProviderSt
         isFavorite: widget.isFavorite,
         isDark: Theme.of(context).brightness == Brightness.dark,
       ),
-    );
-  }
-}
-
-class _HeartBurstAnimation extends StatelessWidget {
-  final AnimationController controller;
-
-  const _HeartBurstAnimation({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        final scale = 1.0 + (controller.value * 0.4);
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            ...List.generate(5, (i) {
-              final angle = (i * 72) * (3.14159 / 180);
-              final distance = controller.value * 60;
-              return Transform.translate(
-                offset: Offset(
-                  math.cos(angle) * distance,
-                  math.sin(angle) * distance,
-                ),
-                child: Transform.scale(
-                  scale: 1 - controller.value,
-                  child: Icon(
-                    Icons.favorite,
-                    color: const Color(0xFFFF3366).withOpacity(1 - controller.value),
-                    size: 20,
-                  ),
-                ),
-              );
-            }),
-            Transform.scale(
-              scale: scale,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFF3366).withOpacity(0.6 * (1 - controller.value)),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 30),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }
@@ -632,48 +527,103 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
-class _FavoriteButton extends StatefulWidget {
+class FavoriteButtonWidget extends StatefulWidget {
   final bool isFavorite;
   final VoidCallback onTap;
   final bool isDark;
 
-  const _FavoriteButton({
+  const FavoriteButtonWidget({
+    super.key,
     required this.isFavorite,
     required this.onTap,
     required this.isDark,
   });
 
   @override
-  State<_FavoriteButton> createState() => _FavoriteButtonState();
+  State<FavoriteButtonWidget> createState() => _FavoriteButtonWidgetState();
 }
 
-class _FavoriteButtonState extends State<_FavoriteButton> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget>
+    with TickerProviderStateMixin {
+  late AnimationController _bounceController;
+  late AnimationController _floatController;
+  late Animation<double> _bounceAnim;
+  late Animation<Offset> _floatAnim;
+  late Animation<double> _fadeAnim;
+  bool _showFloat = false;
+
+  static const _bounceDuration = Duration(milliseconds: 300);
+  static const _floatDuration = Duration(milliseconds: 500);
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _bounceController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 150),
+      duration: _bounceDuration,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.25).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    _floatController = AnimationController(
+      vsync: this,
+      duration: _floatDuration,
+    );
+    _bounceAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.35), weight: 40),
+      TweenSequenceItem(tween: Tween(begin: 1.35, end: 0.9), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 0.9, end: 1.0), weight: 40),
+    ]).animate(CurvedAnimation(
+      parent: _bounceController,
+      curve: Curves.easeInOut,
+    ));
+    _floatAnim = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, -0.85),
+    ).animate(CurvedAnimation(parent: _floatController, curve: Curves.easeOutCubic));
+    _fadeAnim = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _floatController,
+        curve: const Interval(0.25, 1.0, curve: Curves.easeOut),
+      ),
     );
   }
 
   @override
-  void didUpdateWidget(_FavoriteButton oldWidget) {
+  void didUpdateWidget(FavoriteButtonWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.isFavorite != widget.isFavorite) {
-      _controller.forward().then((_) => _controller.reverse());
+      if (widget.isFavorite) {
+        _playFavoriteAnimation();
+      } else {
+        _playUnfavoriteAnimation();
+      }
     }
+  }
+
+  void _playFavoriteAnimation() {
+    _floatController.stop();
+    _bounceController.forward(from: 0);
+    setState(() => _showFloat = true);
+    _floatController.forward(from: 0).then((_) {
+      if (mounted) setState(() => _showFloat = false);
+    });
+  }
+
+  void _playUnfavoriteAnimation() {
+    _floatController.stop();
+    setState(() => _showFloat = false);
+    _bounceController
+      ..duration = const Duration(milliseconds: 200)
+      ..forward(from: 0);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) {
+        _bounceController.duration = _bounceDuration;
+      }
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _bounceController.dispose();
+    _floatController.dispose();
     super.dispose();
   }
 
@@ -682,53 +632,86 @@ class _FavoriteButtonState extends State<_FavoriteButton> with SingleTickerProvi
     final isActive = widget.isFavorite;
     return GestureDetector(
       onTap: () {
-        HapticFeedback.mediumImpact();
+        HapticFeedback.lightImpact();
         widget.onTap();
       },
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          AnimatedBuilder(
-            animation: _scaleAnimation,
-            builder: (context, child) => Transform.scale(
-              scale: _scaleAnimation.value,
-              child: child,
-            ),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
+          RepaintBoundary(
+            child: SizedBox(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(
-                gradient: isActive
-                    ? const LinearGradient(
-                        colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)],
-                      )
-                    : null,
-                color: isActive
-                    ? null
-                    : (widget.isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04)),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isActive
-                      ? Colors.transparent
-                      : (widget.isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05)),
-                ),
-                boxShadow: isActive
-                    ? [
-                        BoxShadow(
-                          color: const Color(0xFFFF3366).withOpacity(0.5),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  ScaleTransition(
+                    scale: _bounceAnim,
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: isActive
+                            ? const LinearGradient(
+                                colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)],
+                              )
+                            : null,
+                        color: isActive
+                            ? null
+                            : (widget.isDark
+                                ? Colors.white.withOpacity(0.08)
+                                : Colors.black.withOpacity(0.04)),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isActive
+                              ? Colors.transparent
+                              : (widget.isDark
+                                  ? Colors.white.withOpacity(0.1)
+                                  : Colors.black.withOpacity(0.05)),
                         ),
-                      ]
-                    : null,
-              ),
-              child: Icon(
-                isActive ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                size: 26,
-                color: isActive
-                    ? Colors.white
-                    : (widget.isDark ? Colors.white54 : const Color(0xFF9B9B9B)),
+                        boxShadow: isActive
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFFFF3366).withOpacity(0.5),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Icon(
+                        isActive
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        size: 26,
+                        color: isActive
+                            ? Colors.white
+                            : (widget.isDark
+                                ? Colors.white54
+                                : const Color(0xFF9B9B9B)),
+                      ),
+                    ),
+                  ),
+                  if (_showFloat)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: IgnorePointer(
+                        child: SlideTransition(
+                          position: _floatAnim,
+                          child: FadeTransition(
+                            opacity: _fadeAnim,
+                            child: const Icon(
+                              Icons.favorite_rounded,
+                              size: 18,
+                              color: Color(0xFFFF3366),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
