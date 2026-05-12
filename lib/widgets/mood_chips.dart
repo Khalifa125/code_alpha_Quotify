@@ -86,16 +86,16 @@ class _MoodChip extends StatelessWidget {
           gradient: isSelected ? GradientHelper.primaryGradient : null,
           color: isSelected 
               ? null 
-              : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.9)),
+              : (isDark ? Colors.white.withOpacity( 0.08) : Colors.white.withOpacity( 0.9)),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected 
                 ? Colors.transparent 
-                : (isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.06)),
+                : (isDark ? Colors.white.withOpacity( 0.1) : Colors.black.withOpacity( 0.06)),
           ),
           boxShadow: isSelected ? [
             BoxShadow(
-              color: GradientHelper.primaryColor.withValues(alpha: 0.4),
+              color: GradientHelper.primaryColor.withOpacity( 0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),

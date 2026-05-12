@@ -44,8 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Screenshots
-*.png
+# Screenshots (root only, not assets)
+/*.png
 
 # External projects
 opencode-mobile/

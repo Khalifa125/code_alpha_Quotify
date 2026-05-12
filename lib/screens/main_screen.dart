@@ -53,6 +53,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         favoritesCount: favorites.length,
         onTap: (index) {
           setState(() => _currentIndex = index);
+          ref.read(currentTabIndexProvider.notifier).state = index;
         },
       ),
     );

@@ -5,45 +5,46 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.29.0'
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.6.1
-  
+
   # Networking
   http: ^1.2.1
-  
+
   # Environment
   flutter_dotenv: ^6.0.0
-  
+
   # Animations
   flutter_animate: ^4.5.0
-  
+
   # Skeleton
   shimmer: ^3.0.0
-  
+
   # Typography
   google_fonts: ^6.2.1
-  
+
   # Share
   share_plus: ^9.0.0
-  
+
   # Storage
   hive_flutter: ^1.1.0
   shared_preferences: ^2.2.3
-  
+
   # Notifications
   flutter_local_notifications: ^17.2.2
   timezone: ^0.9.4
-  
+
   # Image
   screenshot: ^3.0.0
   path_provider: ^2.1.5
-  
+
   # Home Widget
   home_widget: ^0.7.0
-  
+
   # Hive
   hive: ^2.2.3
 

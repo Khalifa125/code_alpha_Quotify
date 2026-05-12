@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
@@ -31,6 +32,7 @@ void main() async {
   await Future.wait([
     Hive.initFlutter(),
     _initNotificationService(),
+    _preloadGoogleFonts(),
   ]);
 
   final prefs = await SharedPreferences.getInstance();
@@ -44,6 +46,14 @@ void main() async {
 Future<void> _initNotificationService() async {
   try {
     await NotificationService().init();
+  } catch (_) {}
+}
+
+Future<void> _preloadGoogleFonts() async {
+  try {
+    GoogleFonts.lato();
+    GoogleFonts.playfairDisplay();
+    await GoogleFonts.pendingFonts();
   } catch (_) {}
 }
 

@@ -24,6 +24,8 @@ final selectedCategoryProvider = StateProvider<String>((ref) => 'All');
 
 final showSwipeHintProvider = StateProvider<bool>((ref) => true);
 
+final currentTabIndexProvider = StateProvider<int>((ref) => 0);
+
 final quoteSearchQueryProvider = StateProvider<String>((ref) => '');
 final favoritesSearchQueryProvider = StateProvider<String>((ref) => '');
 

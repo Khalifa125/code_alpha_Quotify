@@ -7,12 +7,14 @@ class NewQuoteButton extends StatefulWidget {
   final VoidCallback onTap;
   final bool isLoading;
   final int gradientIndex;
+  final bool isTabActive;
 
   const NewQuoteButton({
     super.key,
     required this.onTap,
     required this.isLoading,
     required this.gradientIndex,
+    this.isTabActive = true,
   });
 
   @override
@@ -40,7 +42,7 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
     
-    if (!widget.isLoading) {
+    if (!widget.isLoading && widget.isTabActive) {
       _shimmerController.repeat();
     }
   }
@@ -51,8 +53,15 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
     if (widget.isLoading != oldWidget.isLoading) {
       if (widget.isLoading) {
         _shimmerController.stop();
-      } else {
+      } else if (widget.isTabActive) {
         _shimmerController.repeat();
+      }
+    }
+    if (widget.isTabActive != oldWidget.isTabActive) {
+      if (widget.isTabActive && !widget.isLoading) {
+        _shimmerController.repeat();
+      } else {
+        _shimmerController.stop();
       }
     }
   }
@@ -85,12 +94,12 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: GradientHelper.primaryColor.withValues(alpha: 0.45),
+                  color: GradientHelper.primaryColor.withOpacity( 0.45),
                   blurRadius: 24,
                   offset: const Offset(0, 12),
                 ),
                 BoxShadow(
-                  color: GradientHelper.secondaryColor.withValues(alpha: 0.15),
+                  color: GradientHelper.secondaryColor.withOpacity( 0.15),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),

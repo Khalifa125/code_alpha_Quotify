@@ -96,20 +96,20 @@ class GradientHelper {
     return LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: colors.map((c) => c.withValues(alpha: isDark ? 0.25 : 0.3)).toList(),
+      colors: colors.map((c) => c.withOpacity( isDark ? 0.25 : 0.3)).toList(),
     );
   }
 
   static Color cardBackground(bool isDark) {
     return isDark 
-        ? Colors.white.withValues(alpha: 0.06)
-        : Colors.white.withValues(alpha: 0.92);
+        ? Colors.white.withOpacity( 0.06)
+        : Colors.white.withOpacity( 0.35);
   }
 
   static Color cardBorder(bool isDark) {
     return isDark 
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.05);
+        ? Colors.white.withOpacity( 0.12)
+        : Colors.black.withOpacity( 0.05);
   }
 
   static Color textPrimary(bool isDark) {

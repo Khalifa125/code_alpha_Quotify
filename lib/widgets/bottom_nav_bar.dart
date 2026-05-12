@@ -30,27 +30,27 @@ class _BottomNavBarState extends State<BottomNavBar> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: Container(
             height: 72,
             decoration: BoxDecoration(
               color: isDark 
-                  ? Colors.black.withValues(alpha: 0.65)
-                  : Colors.white.withValues(alpha: 0.92),
+                  ? Colors.black.withOpacity( 0.65)
+                  : Colors.white.withOpacity( 0.92),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: isDark 
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.black.withValues(alpha: 0.04),
+                    ? Colors.white.withOpacity( 0.08)
+                    : Colors.black.withOpacity( 0.04),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: GradientHelper.primaryColor.withValues(alpha: isDark ? 0.15 : 0.08),
+                  color: GradientHelper.primaryColor.withOpacity( isDark ? 0.15 : 0.08),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
+                  color: Colors.black.withOpacity( isDark ? 0.2 : 0.05),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
@@ -161,7 +161,7 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
             boxShadow: widget.isActive
                 ? [
                     BoxShadow(
-                      color: GradientHelper.primaryColor.withValues(alpha: 0.4),
+                      color: GradientHelper.primaryColor.withOpacity( 0.4),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),

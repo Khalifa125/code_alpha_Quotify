@@ -320,12 +320,14 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
   }
 
   Widget _buildBottomSection(BuildContext context, WidgetRef ref, dynamic state) {
+    final isTabActive = ref.watch(currentTabIndexProvider) == 0;
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: NewQuoteButton(
         onTap: () => ref.read(quoteControllerProvider.notifier).fetchQuote(),
         isLoading: state.isLoading,
         gradientIndex: state.gradientIndex,
+        isTabActive: isTabActive,
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 600.ms).slideY(begin: 0.2);
   }
