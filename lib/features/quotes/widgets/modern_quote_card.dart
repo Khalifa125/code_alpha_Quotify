@@ -254,12 +254,12 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
         ),
         if (widget.quote.category != 'All') ...[
           const SizedBox(height: 8),
-          Container(
+          GlassContainer.adaptive(
+            context: context,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: mutedColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
+            borderRadius: 12,
+            blurSigma: 4,
+            opacity: 0.06,
             child: Text(
               widget.quote.category,
               style: GoogleFonts.lato(
@@ -361,21 +361,20 @@ class _CopiedToast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassContainer.adaptive(
+      context: context,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: GradientHelper.primaryGradient.colors,
+      borderRadius: 24,
+      blurSigma: 8,
+      opacity: 0.15,
+      gradient: GradientHelper.primaryGradient,
+      boxShadow: [
+        BoxShadow(
+          color: GradientHelper.primaryColor.withOpacity(0.4),
+          blurRadius: 16,
+          offset: const Offset(0, 4),
         ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: GradientHelper.primaryColor.withOpacity(0.4),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      ],
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

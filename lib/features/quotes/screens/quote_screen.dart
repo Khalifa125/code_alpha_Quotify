@@ -361,7 +361,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF1A1333) : Colors.white,
+            ? const Color(0xF01A1333) : const Color(0xF0FFFFFF),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('New Collection',
           style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600)),

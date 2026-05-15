@@ -139,22 +139,11 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildHeader(bool isDark) {
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF8B5CF6).withOpacity(0.35),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: const Icon(Icons.settings_rounded, color: Colors.white, size: 24),
+        const GlassIconContainer(
+          icon: Icons.settings_rounded,
+          size: 24,
+          containerSize: 48,
+          borderRadius: 16,
         ),
         const SizedBox(width: 16),
         Column(
@@ -185,26 +174,16 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildFooter(bool isDark) {
-    return Center(
+    return GlassCard(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+      tintOpacity: isDark ? 0.04 : 0.3,
+      blurSigma: 8,
       child: Column(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset('assets/icon1.png', fit: BoxFit.cover),
-            ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.asset('assets/icon1.png', width: 56, height: 56, fit: BoxFit.cover),
           ),
           const SizedBox(height: 12),
           Text(
@@ -226,11 +205,7 @@ class SettingsScreen extends ConsumerWidget {
                   color: isDark ? Colors.white38 : const Color(0xFF9B9B9B),
                 ),
               ),
-              const Icon(
-                Icons.favorite_rounded,
-                size: 12,
-                color: Color(0xFFFF3366),
-              ),
+              const Icon(Icons.favorite_rounded, size: 12, color: Color(0xFFFF3366)),
             ],
           ),
         ],
@@ -362,24 +337,9 @@ class _NotificationTile extends StatelessWidget {
           ),
         ],
         child: Row(children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: isEnabled
-                  ? const LinearGradient(colors: [Color(0xFF9F7AEA), Color(0xFF6366F1)])
-                  : null,
-              color: isEnabled
-                  ? null
-                  : (isDark ? Colors.white10 : Colors.black.withOpacity(0.05)),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              Icons.notifications_outlined,
-              color: isEnabled
-                  ? Colors.white
-                  : (isDark ? Colors.white54 : const Color(0xFF6B6B7B)),
-              size: 22,
-            ),
+          const GlassIconContainer(
+            icon: Icons.notifications_outlined,
+            size: 22,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -703,7 +663,7 @@ class _CollectionsManageSheet extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1A1333) : Colors.white,
+        backgroundColor: isDark ? const Color(0xF01A1333) : const Color(0xF0FFFFFF),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('New Collection',
           style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600)),
