@@ -5,6 +5,14 @@ class AppTheme {
   static const double _radius = 20;
   static const double _buttonRadius = 14;
 
+  static ThemeData themeFor(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.dark: return darkTheme;
+      case ThemeMode.light: return lightTheme;
+      case ThemeMode.system: return lightTheme;
+    }
+  }
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

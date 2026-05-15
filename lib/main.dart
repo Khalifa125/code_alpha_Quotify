@@ -1,22 +1,20 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'features/onboarding/screens/onboarding_screen.dart';
+import 'features/splash/screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 import 'providers.dart';
-import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemStatusBarContrastEnforced: false,
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ),
@@ -27,46 +25,31 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  await dotenv.load(fileName: '.env');
-
-  await Future.wait([
-    Hive.initFlutter(),
-    _initNotificationService(),
-    _preloadGoogleFonts(),
-  ]);
-
-  final prefs = await SharedPreferences.getInstance();
-  final onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
-
-  runApp(ProviderScope(
-    child: QuotifyApp(showOnboarding: !onboardingComplete),
+  runApp(const ProviderScope(
+    child: QuotifyApp(),
   ));
 }
 
-Future<void> _initNotificationService() async {
-  try {
-    await NotificationService().init();
-  } catch (_) {}
-}
-
-Future<void> _preloadGoogleFonts() async {
-  try {
-    GoogleFonts.lato();
-    GoogleFonts.playfairDisplay();
-    await GoogleFonts.pendingFonts();
-  } catch (_) {}
-}
-
 class QuotifyApp extends ConsumerWidget {
-  final bool showOnboarding;
-
-  const QuotifyApp({super.key, this.showOnboarding = true});
+  const QuotifyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
+
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        systemStatusBarContrastEnforced: false,
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      ),
+    );
+
     return AnimatedTheme(
-      data: themeMode == ThemeMode.dark ? AppTheme.darkTheme : AppTheme.lightTheme,
+      data: AppTheme.themeFor(themeMode),
       duration: const Duration(milliseconds: 300),
       child: MaterialApp(
         title: 'Quotify',
@@ -74,8 +57,9 @@ class QuotifyApp extends ConsumerWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeMode,
-        initialRoute: showOnboarding ? '/onboarding' : '/home',
+        initialRoute: '/splash',
         routes: {
+          '/splash': (context) => const SplashScreen(),
           '/onboarding': (context) => const OnboardingScreen(),
           '/home': (context) => const MainScreen(),
         },

@@ -24,64 +24,71 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            height: 72,
-            decoration: BoxDecoration(
-              color: isDark 
-                  ? Colors.black.withOpacity( 0.65)
-                  : Colors.white.withOpacity( 0.92),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: isDark 
-                    ? Colors.white.withOpacity( 0.08)
-                    : Colors.black.withOpacity( 0.04),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: GradientHelper.primaryColor.withOpacity( isDark ? 0.15 : 0.08),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity( isDark ? 0.2 : 0.05),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+
+    return SafeArea(
+      top: false,
+      minimum: const EdgeInsets.only(top: 0),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _NavItem(
-                  icon: Icons.format_quote_rounded,
-                  label: 'Quote',
-                  isActive: widget.currentIndex == 0,
-                  isDark: isDark,
-                  onTap: () => widget.onTap(0),
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.15 : 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF1E1E1E).withOpacity(0.85)
+                    : Colors.white.withOpacity(0.85),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.06),
+                  width: 0.5,
                 ),
-                _NavItem(
-                  icon: Icons.favorite_rounded,
-                  label: 'Favorites',
-                  isActive: widget.currentIndex == 1,
-                  isDark: isDark,
-                  badgeCount: widget.favoritesCount,
-                  onTap: () => widget.onTap(1),
-                ),
-                _NavItem(
-                  icon: Icons.settings_rounded,
-                  label: 'Settings',
-                  isActive: widget.currentIndex == 2,
-                  isDark: isDark,
-                  onTap: () => widget.onTap(2),
-                ),
-              ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _NavItem(
+                    icon: Icons.format_quote_rounded,
+                    label: 'Quote',
+                    isActive: widget.currentIndex == 0,
+                    isDark: isDark,
+                    onTap: () => widget.onTap(0),
+                  ),
+                  _NavItem(
+                    icon: Icons.favorite_rounded,
+                    label: 'Favorites',
+                    isActive: widget.currentIndex == 1,
+                    isDark: isDark,
+                    badgeCount: widget.favoritesCount,
+                    onTap: () => widget.onTap(1),
+                  ),
+                  _NavItem(
+                    icon: Icons.settings_rounded,
+                    label: 'Settings',
+                    isActive: widget.currentIndex == 2,
+                    isDark: isDark,
+                    onTap: () => widget.onTap(2),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -120,11 +127,12 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 150),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.92), weight: 40),
+      TweenSequenceItem(tween: Tween(begin: 0.92, end: 1.0), weight: 60),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -135,9 +143,10 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
 
   @override
   Widget build(BuildContext context) {
-    final inactiveColor = widget.isDark ? Colors.white54 : const Color(0xFF9B9B9B);
-    final activeGradient = GradientHelper.activeNavGradient;
-    
+    final activeColor = widget.isDark ? const Color(0xFFA78BFA) : const Color(0xFF6366F1);
+    final inactiveColor = widget.isDark ? const Color(0xFF707075) : const Color(0xFF999999);
+    final isActive = widget.isActive;
+
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
@@ -153,20 +162,14 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
           child: child,
         ),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
-            gradient: widget.isActive ? activeGradient : null,
+            color: isActive
+                ? activeColor.withOpacity(0.12)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: widget.isActive
-                ? [
-                    BoxShadow(
-                      color: GradientHelper.primaryColor.withOpacity( 0.4),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -176,17 +179,17 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
                 children: [
                   Icon(
                     widget.icon,
-                    size: 22,
-                    color: widget.isActive ? Colors.white : inactiveColor,
+                    size: 24,
+                    color: isActive ? activeColor : inactiveColor,
                   ),
-                  if (widget.badgeCount > 0 && !widget.isActive)
+                  if (widget.badgeCount > 0 && !isActive)
                     Positioned(
-                      right: -8,
-                      top: -6,
+                      right: -6,
+                      top: -4,
                       child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFF3366),
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: widget.isDark ? const Color(0xFFFF453A) : const Color(0xFFEF4444),
                           shape: BoxShape.circle,
                         ),
                         constraints: const BoxConstraints(
@@ -207,14 +210,14 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
                     ),
                 ],
               ),
-              if (widget.isActive) ...[
+              if (isActive) ...[
                 const SizedBox(width: 8),
                 Text(
                   widget.label,
                   style: GoogleFonts.lato(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: activeColor,
                     letterSpacing: 0.3,
                   ),
                 ),

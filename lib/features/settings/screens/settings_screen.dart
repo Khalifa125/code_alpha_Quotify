@@ -652,7 +652,8 @@ class _CollectionsManageSheet extends ConsumerWidget {
   void _onCreateCollection(BuildContext context, WidgetRef ref, TextEditingController nameController) async {
     final name = nameController.text.trim();
     if (name.isNotEmpty) {
-      await ref.read(collectionsProvider.notifier).createCollection(name);
+      final notifier = ref.read(collectionsProvider.notifier);
+      await notifier.createCollection(name);
       HapticFeedback.lightImpact();
       if (context.mounted) Navigator.pop(context);
     }

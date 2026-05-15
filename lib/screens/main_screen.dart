@@ -29,6 +29,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final favorites = ref.watch(favoritesProvider);
 
     return Scaffold(
+      extendBody: true,
+      backgroundColor: Colors.transparent,
       body: Container(
         decoration: BoxDecoration(
           gradient: isDark
