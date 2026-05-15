@@ -49,21 +49,22 @@ class FavoritesNotifier extends StateNotifier<List<Quote>> {
 
   Future<void> toggleFavorite(Quote quote) async {
     if (isFavorite(quote)) {
+      state = state.where((q) => q.text != quote.text || q.author != quote.author).toList();
       await _storage.removeFavorite(quote);
     } else {
+      state = [quote, ...state];
       await _storage.addFavorite(quote);
     }
-    state = List.from(_storage.getFavorites());
   }
 
   Future<void> removeFavorite(Quote quote) async {
+    state = state.where((q) => q.text != quote.text || q.author != quote.author).toList();
     await _storage.removeFavorite(quote);
-    state = List.from(_storage.getFavorites());
   }
 
   Future<void> restoreFavorite(Quote quote) async {
+    state = [quote, ...state];
     await _storage.addFavorite(quote);
-    state = List.from(_storage.getFavorites());
   }
 }
 

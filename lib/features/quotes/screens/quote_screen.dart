@@ -290,6 +290,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                   final file = File('${dir.path}/quotify_share.png');
                   await file.writeAsBytes(image);
                   await Share.shareXFiles([XFile(file.path)]);
+                  try { await file.delete(); } catch (_) {}
                 } else if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Could not capture quote image. Try again.')),
