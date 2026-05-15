@@ -16,12 +16,13 @@ class SettingsScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themeMode = ref.watch(themeModeProvider);
     final notificationsEnabled = ref.watch(notificationsEnabledProvider);
-    final quoteState = ref.watch(quoteControllerProvider);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Scrollbar(
+          child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,14 +52,29 @@ class SettingsScreen extends ConsumerWidget {
                       if (newState) {
                         try {
                           final hasPermission = await notifService.requestPermission();
-                          if (hasPermission && quoteState.quote != null) {
-                            await notifService.scheduleDailyNotification(
-                              hour: ref.read(notificationHourProvider),
-                              minute: ref.read(notificationMinuteProvider),
-                              quote: quoteState.quote!,
-                            );
-                            ref.read(notificationsEnabledProvider.notifier).state = true;
+                          if (!hasPermission) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Notification permission denied. Enable in Settings.')),
+                              );
+                            }
+                            return;
                           }
+                          final loadedQuote = ref.read(quoteControllerProvider).quote;
+                          if (loadedQuote == null) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Load a quote first, then enable notifications.')),
+                              );
+                            }
+                            return;
+                          }
+                          await notifService.scheduleDailyNotification(
+                            hour: ref.read(notificationHourProvider),
+                            minute: ref.read(notificationMinuteProvider),
+                            quote: loadedQuote,
+                          );
+                          ref.read(notificationsEnabledProvider.notifier).state = true;
                         } catch (e) {
                           ref.read(notificationsEnabledProvider.notifier).state = false;
                         }
@@ -78,11 +94,12 @@ class SettingsScreen extends ConsumerWidget {
                         ref.read(notificationHourProvider.notifier).state = hour;
                         ref.read(notificationMinuteProvider.notifier).state = minute;
                         final notifService = ref.read(notificationServiceProvider);
-                        if (quoteState.quote != null) {
+                        final current = ref.read(quoteControllerProvider).quote;
+                        if (current != null) {
                           await notifService.scheduleDailyNotification(
                             hour: hour,
                             minute: minute,
-                            quote: quoteState.quote!,
+                            quote: current,
                           );
                         }
                       },
@@ -112,6 +129,7 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 40),
               _buildFooter(isDark),
             ],
+          ),
           ),
         ),
       ),
@@ -555,6 +573,8 @@ class _CollectionsTile extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
+      enableDrag: true,
+      useSafeArea: true,
       builder: (context) => _CollectionsManageSheet(isDark: isDark),
     );
   }
@@ -669,6 +689,15 @@ class _CollectionsManageSheet extends ConsumerWidget {
     );
   }
 
+  void _onCreateCollection(BuildContext context, WidgetRef ref, TextEditingController nameController) async {
+    final name = nameController.text.trim();
+    if (name.isNotEmpty) {
+      await ref.read(collectionsProvider.notifier).createCollection(name);
+      HapticFeedback.lightImpact();
+      if (context.mounted) Navigator.pop(context);
+    }
+  }
+
   void _showCreateCollectionDialog(BuildContext context, WidgetRef ref) {
     final nameController = TextEditingController();
     showDialog<void>(
@@ -681,6 +710,8 @@ class _CollectionsManageSheet extends ConsumerWidget {
         content: TextField(
           controller: nameController,
           autofocus: true,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _onCreateCollection(context, ref, nameController),
           decoration: const InputDecoration(
             hintText: 'Collection name',
             border: OutlineInputBorder(),
@@ -692,14 +723,7 @@ class _CollectionsManageSheet extends ConsumerWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () async {
-              final name = nameController.text.trim();
-              if (name.isNotEmpty) {
-                await ref.read(collectionsProvider.notifier).createCollection(name);
-                HapticFeedback.lightImpact();
-                if (context.mounted) Navigator.pop(context);
-              }
-            },
+            onPressed: () => _onCreateCollection(context, ref, nameController),
             child: const Text('Create',
               style: TextStyle(color: GradientHelper.primaryColor)),
           ),

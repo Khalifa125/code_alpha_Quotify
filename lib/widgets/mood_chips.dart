@@ -29,7 +29,15 @@ class MoodChips extends ConsumerWidget {
 
     return SizedBox(
       height: 48,
-      child: ListView.builder(
+      child: ShaderMask(
+        shaderCallback: (bounds) => const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [Colors.black, Colors.black, Colors.transparent],
+          stops: [0, 0.88, 1],
+        ).createShader(bounds),
+        blendMode: BlendMode.dstIn,
+        child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -52,6 +60,7 @@ class MoodChips extends ConsumerWidget {
             ),
           );
         },
+      ),
       ),
     );
   }
@@ -108,8 +117,8 @@ class _MoodChipState extends State<_MoodChip> with SingleTickerProviderStateMixi
         _controller.forward(from: 0);
         widget.onTap();
       },
-      child: AnimatedBuilder(
-        animation: _bounceAnim,
+      child: ListenableBuilder(
+        listenable: _bounceAnim,
         builder: (context, child) => Transform.scale(
           scale: _bounceAnim.value,
           child: child,

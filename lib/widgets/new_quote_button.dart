@@ -26,6 +26,7 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
   late AnimationController _scaleController;
   late AnimationController _shimmerController;
   late Animation<double> _scaleAnimation;
+  late Listenable _mergedListenable;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
+    _mergedListenable = Listenable.merge([_scaleAnimation, _shimmerController]);
     
     if (!widget.isLoading && widget.isTabActive) {
       _shimmerController.repeat();
@@ -83,8 +85,8 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
         widget.onTap();
       },
       onTapCancel: widget.isLoading ? null : () => _scaleController.reverse(),
-      child: AnimatedBuilder(
-        animation: Listenable.merge([_scaleAnimation, _shimmerController]),
+      child: ListenableBuilder(
+        listenable: _mergedListenable,
         builder: (context, child) => Transform.scale(
           scale: _scaleAnimation.value,
           child: Container(

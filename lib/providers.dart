@@ -103,7 +103,7 @@ class CollectionsNotifier extends StateNotifier<List<Collection>> {
     await prefs.setStringList('collections', collectionsJson);
   }
 
-  Future<void> createCollection(String name) async {
+  Future<String> createCollection(String name) async {
     final collection = Collection(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
@@ -112,6 +112,7 @@ class CollectionsNotifier extends StateNotifier<List<Collection>> {
     );
     state = [...state, collection];
     await _saveCollections();
+    return collection.id;
   }
 
   Future<void> addQuoteToCollection(String collectionId, String quoteId) async {
@@ -259,14 +260,18 @@ class QuoteController extends StateNotifier<QuoteState> {
     try {
       final quotes = await _service.fetchByCategory(category);
       _gradientIndex = _random.nextInt(6);
+      final quote = quotes.isNotEmpty ? quotes.first : null;
+      if (quote != null) {
+        _addToHistory(quote);
+      }
       state = state.copyWith(
-        quote: quotes.isNotEmpty ? quotes.first : null,
+        quote: quote,
         quotes: quotes,
         isLoading: false,
         gradientIndex: _gradientIndex,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: "Couldn't load quotes for this category.");
     }
   }
 

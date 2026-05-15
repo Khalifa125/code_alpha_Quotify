@@ -92,6 +92,8 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
+        child: Scrollbar(
+        controller: _scrollController,
         child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         controller: _scrollController,
@@ -99,7 +101,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
             sliver: SliverToBoxAdapter(
-              child: _buildHeader(context, isDark, ref),
+              child: _buildHeader(context, isDark, favorites, ref),
             ),
           ),
           if (_isSearching)
@@ -148,10 +150,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         ],
       ),
       ),
+      ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, bool isDark, WidgetRef ref) {
+  Widget _buildHeader(BuildContext context, bool isDark, List<Quote> favorites, WidgetRef ref) {
     final textColor = GradientHelper.textPrimary(isDark);
     final mutedColor = GradientHelper.textMuted(isDark);
 
@@ -173,7 +176,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              '${ref.watch(favoritesProvider).length} saved quotes',
+              '${favorites.length} saved quotes',
               style: GoogleFonts.lato(
                 fontSize: 12,
                 color: mutedColor,
@@ -290,6 +293,8 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
+      enableDrag: true,
+      useSafeArea: true,
       builder: (context) => _SortSheet(
         currentSort: _sortOrder,
         isDark: isDark,
@@ -544,7 +549,7 @@ class _FavoriteQuoteCard extends StatelessWidget {
           ],
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1);
+    );
   }
 }
 

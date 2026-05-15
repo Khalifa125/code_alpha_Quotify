@@ -48,6 +48,7 @@ class ModernQuoteCard extends StatefulWidget {
 
 class _ModernQuoteCardState extends State<ModernQuoteCard> {
   double _dragX = 0;
+  OverlayEntry? _toastEntry;
 
   void _onHorizontalDragUpdate(DragUpdateDetails details) {
     setState(() {
@@ -57,12 +58,19 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
   }
 
   void _onHorizontalDragEnd(DragEndDetails details) {
-    if (_dragX > 50) {
+    final velocity = details.primaryVelocity ?? 0;
+    if (_dragX > 50 || velocity > 400) {
       widget.onNext();
-    } else if (_dragX < -50) {
+    } else if (_dragX < -50 || velocity < -400) {
       widget.onPrevious();
     }
     setState(() => _dragX = 0);
+  }
+
+  @override
+  void dispose() {
+    _toastEntry?.remove();
+    super.dispose();
   }
 
   @override
@@ -76,6 +84,7 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
     return Screenshot(
       controller: widget.screenshotController,
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onHorizontalDragUpdate: _onHorizontalDragUpdate,
         onHorizontalDragEnd: _onHorizontalDragEnd,
         onDoubleTap: () {
@@ -294,20 +303,22 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
   }
 
   void _showCopyFlash(BuildContext context) {
-    final overlay = Overlay.of(context);
-    late OverlayEntry entry;
-    entry = OverlayEntry(
+    _toastEntry?.remove();
+    _toastEntry = OverlayEntry(
       builder: (context) => Positioned(
         bottom: MediaQuery.of(context).size.height * 0.15,
         left: 0,
         right: 0,
-        child: Center(
+        child: const Center(
           child: _CopiedToast(),
         ),
       ),
     );
-    overlay.insert(entry);
-    Future.delayed(const Duration(milliseconds: 2000), () => entry.remove());
+    Overlay.of(context, rootOverlay: true).insert(_toastEntry!);
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      _toastEntry?.remove();
+      _toastEntry = null;
+    });
   }
 
   void _showQuickActions(BuildContext context) {
@@ -315,6 +326,8 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      enableDrag: true,
+      useSafeArea: true,
       builder: (context) => _QuickActionSheet(
         onCopy: () {
           Navigator.pop(context);
@@ -344,6 +357,8 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
 }
 
 class _CopiedToast extends StatelessWidget {
+  const _CopiedToast();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -618,14 +633,7 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget>
   void _playUnfavoriteAnimation() {
     _floatController.stop();
     setState(() => _showFloat = false);
-    _bounceController
-      ..duration = const Duration(milliseconds: 200)
-      ..forward(from: 0);
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted) {
-        _bounceController.duration = _bounceDuration;
-      }
-    });
+    _bounceController.forward(from: 0);
   }
 
   @override

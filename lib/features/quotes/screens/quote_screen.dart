@@ -289,9 +289,10 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                   final dir = await getTemporaryDirectory();
                   final file = File('${dir.path}/quotify_share.png');
                   await file.writeAsBytes(image);
-                  await Share.shareXFiles(
-                    [XFile(file.path)],
-                    text: '"${state.quote!.text}"\n\n— ${state.quote!.author}',
+                  await Share.shareXFiles([XFile(file.path)]);
+                } else if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Could not capture quote image. Try again.')),
                   );
                 }
               },
@@ -332,6 +333,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
+      enableDrag: true,
+      useSafeArea: true,
       builder: (context) => _CollectionPickerSheet(
         collections: collections,
         isDark: Theme.of(context).brightness == Brightness.dark,
@@ -364,6 +367,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         content: TextField(
           controller: nameController,
           autofocus: true,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _onCreateCollection(context, ref, nameController, quote),
           decoration: InputDecoration(
             hintText: 'Collection name',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -375,27 +380,26 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () async {
-              final name = nameController.text.trim();
-              if (name.isNotEmpty) {
-                await ref.read(collectionsProvider.notifier).createCollection(name);
-                final collections = ref.read(collectionsProvider);
-                if (collections.isNotEmpty) {
-                  await ref.read(collectionsProvider.notifier).addQuoteToCollection(
-                    collections.last.id,
-                    quote.text.hashCode.toString(),
-                  );
-                }
-                HapticFeedback.lightImpact();
-                if (context.mounted) Navigator.pop(context);
-              }
-            },
+            onPressed: () => _onCreateCollection(context, ref, nameController, quote),
             child: const Text('Create',
               style: TextStyle(color: GradientHelper.primaryColor)),
           ),
         ],
       ),
     );
+  }
+
+  void _onCreateCollection(BuildContext context, WidgetRef ref, TextEditingController nameController, Quote quote) async {
+    final name = nameController.text.trim();
+    if (name.isNotEmpty) {
+      final id = await ref.read(collectionsProvider.notifier).createCollection(name);
+      await ref.read(collectionsProvider.notifier).addQuoteToCollection(
+        id,
+        quote.text.hashCode.toString(),
+      );
+      HapticFeedback.lightImpact();
+      if (context.mounted) Navigator.pop(context);
+    }
   }
 }
 
@@ -534,14 +538,22 @@ class _SwipeHintOverlay extends StatefulWidget {
 }
 
 class _SwipeHintOverlayState extends State<_SwipeHintOverlay> {
+  Timer? _dismissTimer;
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 4), () {
+    _dismissTimer = Timer(const Duration(seconds: 4), () {
       if (mounted) {
         widget.onDismiss();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _dismissTimer?.cancel();
+    super.dispose();
   }
 
   @override

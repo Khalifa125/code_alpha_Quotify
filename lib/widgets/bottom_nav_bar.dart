@@ -146,8 +146,8 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
         widget.onTap();
       },
       onTapCancel: () => _controller.reverse(),
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
+      child: ListenableBuilder(
+        listenable: _scaleAnimation,
         builder: (context, child) => Transform.scale(
           scale: _scaleAnimation.value,
           child: child,

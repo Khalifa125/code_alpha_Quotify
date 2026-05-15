@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/utils/gradient_helper.dart';
 import '../../../exports.dart';
+import '../../../screens/main_screen.dart';
 import '../../../widgets/glass_container.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -29,7 +30,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await prefs.setBool('onboarding_complete', true);
     if (mounted) {
       HapticFeedback.mediumImpact();
-      Navigator.of(context).pushReplacementNamed('/home');
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => const MainScreen(),
+          transitionDuration: const Duration(milliseconds: 500),
+          transitionsBuilder: (_, animation, __, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              child: child,
+            );
+          },
+        ),
+      );
     }
   }
 
@@ -128,7 +140,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(4, (index) {
         final isActive = index == _currentPage;
-        return AnimatedContainer(
+        return AnimatedScale(
+          scale: isActive ? 1.0 : 0.7,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutBack,
+          child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: isActive ? 32 : 8,
@@ -139,7 +155,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ? null
                 : (isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1)),
             borderRadius: BorderRadius.circular(4),
+            boxShadow: isActive ? [
+              BoxShadow(
+                color: GradientHelper.primaryColor.withOpacity(0.4),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ] : null,
           ),
+        ),
         );
       }),
     );
