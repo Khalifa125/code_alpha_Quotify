@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/utils/gradient_helper.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../models/quote.dart';
+import '../../../../widgets/glass_container.dart';
 
 class ModernQuoteCard extends StatefulWidget {
   final Quote quote;
@@ -400,20 +401,18 @@ class _QuickActionSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1333) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+      tintOpacity: isDark ? 0.08 : 0.45,
+      blurSigma: 12,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          blurRadius: 24,
+          offset: const Offset(0, 10),
+        ),
+      ],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -499,18 +498,27 @@ class _ActionButton extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: isActive ? const LinearGradient(colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)]) : null,
-              color: isActive ? null : (isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04)),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              icon,
-              color: isActive ? Colors.white : (isDark ? Colors.white70 : Colors.black54),
-              size: 24,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: isActive ? const LinearGradient(colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)]) : null,
+                  color: isActive ? null : (isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.35)),
+                  borderRadius: BorderRadius.circular(16),
+                  border: isActive ? null : Border.all(
+                    color: (isDark ? Colors.white : Colors.black).withOpacity(isDark ? 0.08 : 0.06),
+                  ),
+                ),
+                child: Icon(
+                  icon,
+                  color: isActive ? Colors.white : (isDark ? Colors.white70 : Colors.black54),
+                  size: 24,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 8),

@@ -18,9 +18,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [
-    QuoteScreen(),
-    FavoritesScreen(),
-    SettingsScreen(),
+    SizedBox(key: ValueKey(0), child: QuoteScreen()),
+    SizedBox(key: ValueKey(1), child: FavoritesScreen()),
+    SizedBox(key: ValueKey(2), child: SettingsScreen()),
   ];
 
   @override
@@ -43,9 +43,26 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   colors: [Color(0xFFF8F5FC), Color(0xFFEEEDF5)],
                 ),
         ),
-        child: IndexedStack(
-          index: _currentIndex,
-          children: _screens,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.08, 0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                )),
+                child: child,
+              ),
+            );
+          },
+          child: _screens[_currentIndex],
         ),
       ),
       bottomNavigationBar: BottomNavBar(

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../core/utils/gradient_helper.dart';
 import '../providers.dart';
 import '../services/quote_service.dart';
+import 'glass_container.dart';
 
 class MoodChips extends ConsumerWidget {
   const MoodChips({super.key});
@@ -56,7 +57,7 @@ class MoodChips extends ConsumerWidget {
   }
 }
 
-class _MoodChip extends StatelessWidget {
+class _MoodChip extends StatefulWidget {
   final String label;
   final IconData icon;
   final bool isSelected;
@@ -72,57 +73,96 @@ class _MoodChip extends StatelessWidget {
   });
 
   @override
+  State<_MoodChip> createState() => _MoodChipState();
+}
+
+class _MoodChipState extends State<_MoodChip> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _bounceAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _bounceAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.92), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 0.92, end: 1.05), weight: 30),
+      TweenSequenceItem(tween: Tween(begin: 1.05, end: 1.0), weight: 40),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isSelected = widget.isSelected;
     return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 16 : 12,
-          vertical: 10,
+      onTap: () {
+        _controller.forward(from: 0);
+        widget.onTap();
+      },
+      child: AnimatedBuilder(
+        animation: _bounceAnim,
+        builder: (context, child) => Transform.scale(
+          scale: _bounceAnim.value,
+          child: child,
         ),
-        decoration: BoxDecoration(
-          gradient: isSelected ? GradientHelper.primaryGradient : null,
-          color: isSelected 
-              ? null 
-              : (isDark ? Colors.white.withOpacity( 0.08) : Colors.white.withOpacity( 0.9)),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected 
-                ? Colors.transparent 
-                : (isDark ? Colors.white.withOpacity( 0.1) : Colors.black.withOpacity( 0.06)),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.symmetric(
+            horizontal: isSelected ? 16 : 12,
+            vertical: 10,
           ),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: GradientHelper.primaryColor.withOpacity( 0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+          decoration: BoxDecoration(
+            gradient: isSelected ? GradientHelper.primaryGradient : null,
+            color: isSelected 
+                ? null 
+                : GradientHelper.glassTint(widget.isDark),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected 
+                  ? Colors.transparent 
+                  : GradientHelper.glassBorder(widget.isDark),
             ),
-          ] : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected
-                  ? Colors.white
-                  : (isDark ? Colors.white54 : const Color(0xFF6B7280)),
-            ),
-            if (isSelected) ...[
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: GoogleFonts.lato(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+            boxShadow: isSelected ? [
+              BoxShadow(
+                color: GradientHelper.primaryColor.withOpacity(0.4),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
+            ] : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                widget.icon,
+                size: 16,
+                color: isSelected
+                    ? Colors.white
+                    : (widget.isDark ? Colors.white54 : const Color(0xFF6B7280)),
+              ),
+              if (isSelected) ...[
+                const SizedBox(width: 6),
+                Text(
+                  widget.label,
+                  style: GoogleFonts.lato(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

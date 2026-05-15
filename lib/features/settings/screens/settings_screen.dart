@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../core/utils/gradient_helper.dart';
 import '../../../../providers.dart';
+import '../../../../widgets/glass_container.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -239,33 +240,20 @@ class _SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: GlassCard(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
+        tintOpacity: isDark ? 0.04 : 0.45,
+        borderRadius: 20,
+        blurSigma: 8,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+        ],
         child: Row(children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF9F7AEA), Color(0xFF6366F1)],
-              ),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: Colors.white, size: 22),
-          ),
+          GlassIconContainer(icon: icon, size: 22),
           const SizedBox(width: 16),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(title,
@@ -281,12 +269,12 @@ class _SettingsTile extends StatelessWidget {
                   color: isDark ? Colors.white54 : const Color(0xFF6B6B7B),
                 )),
           ])),
-          Container(
+          GlassContainer.adaptive(
+            context: context,
+            borderRadius: 10,
+            blurSigma: 4,
+            opacity: 0.05,
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
-              borderRadius: BorderRadius.circular(10),
-            ),
             child: Icon(Icons.chevron_right_rounded,
                 color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
           ),
@@ -343,22 +331,18 @@ class _NotificationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onToggle,
-      child: Container(
+      child: GlassCard(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
+        tintOpacity: isDark ? 0.04 : 0.45,
+        borderRadius: 20,
+        blurSigma: 8,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+        ],
         child: Row(children: [
           Container(
             padding: const EdgeInsets.all(12),
@@ -470,31 +454,23 @@ class _TimePickerTile extends StatelessWidget {
           onTimeChanged(picked.hour, picked.minute);
         }
       },
-      child: Container(
+      child: GlassCard(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
+        tintOpacity: isDark ? 0.04 : 0.45,
+        borderRadius: 20,
+        blurSigma: 8,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+        ],
         child: Row(children: [
-          Container(
+          GlassContainer.adaptive(
+            context: context, borderRadius: 14, blurSigma: 4, opacity: 0.08,
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white10 : Colors.black.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(Icons.access_time_rounded,
-                color: isDark ? Colors.white54 : const Color(0xFF6B6B7B), size: 22),
+            child: Icon(Icons.access_time_rounded, color: isDark ? Colors.white54 : const Color(0xFF6B6B7B), size: 22),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -512,14 +488,10 @@ class _TimePickerTile extends StatelessWidget {
                   color: isDark ? Colors.white54 : const Color(0xFF6B6B7B),
                 )),
           ])),
-          Container(
+          GlassContainer.adaptive(
+            context: context, borderRadius: 10, blurSigma: 4, opacity: 0.05,
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.chevron_right_rounded,
-                color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
+            child: Icon(Icons.chevron_right_rounded, color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
           ),
         ]),
       ),
@@ -537,32 +509,22 @@ class _CollectionsTile extends ConsumerWidget {
     final collections = ref.watch(collectionsProvider);
     return GestureDetector(
       onTap: () => _showCollectionsSheet(context, ref),
-      child: Container(
+      child: GlassCard(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
+        tintOpacity: isDark ? 0.04 : 0.45,
+        borderRadius: 20,
+        blurSigma: 8,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+        ],
         child: Row(children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF9F7AEA), Color(0xFF6366F1)],
-              ),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(Icons.collections_bookmark_rounded, color: Colors.white, size: 22),
+          const GlassIconContainer(
+            icon: Icons.collections_bookmark_rounded,
+            size: 22,
           ),
           const SizedBox(width: 16),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -579,14 +541,10 @@ class _CollectionsTile extends ConsumerWidget {
                   color: isDark ? Colors.white54 : const Color(0xFF6B6B7B),
                 )),
           ])),
-          Container(
+          GlassContainer.adaptive(
+            context: context, borderRadius: 10, blurSigma: 4, opacity: 0.05,
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.03),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.chevron_right_rounded,
-                color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
+            child: Icon(Icons.chevron_right_rounded, color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
           ),
         ]),
       ),
@@ -610,20 +568,18 @@ class _CollectionsManageSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collections = ref.watch(collectionsProvider);
-    return Container(
+    return GlassCard(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1333) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+      tintOpacity: isDark ? 0.08 : 0.45,
+      blurSigma: 12,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          blurRadius: 24,
+          offset: const Offset(0, 10),
+        ),
+      ],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -651,15 +607,14 @@ class _CollectionsManageSheet extends ConsumerWidget {
               ]),
             )
           else
-            ...collections.map((c) => Container(
+            ...collections.map((c) => GlassContainer.adaptive(
+              context: context,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              margin: const EdgeInsets.only(bottom: 8),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(14),
-              ),
+              borderRadius: 14,
+              blurSigma: 4,
+              opacity: 0.08,
               child: Row(children: [
-                Icon(Icons.collections_bookmark_rounded, size: 20,
+                const Icon(Icons.collections_bookmark_rounded, size: 20,
                   color: GradientHelper.primaryColor),
                 const SizedBox(width: 12),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -674,12 +629,12 @@ class _CollectionsManageSheet extends ConsumerWidget {
                     ref.read(collectionsProvider.notifier).deleteCollection(c.id);
                     HapticFeedback.lightImpact();
                   },
-                  child: Container(
+                  child: GlassContainer.adaptive(
+                    context: context,
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF3366).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    borderRadius: 10,
+                    blurSigma: 4,
+                    opacity: 0.06,
                     child: const Icon(Icons.delete_rounded, size: 16, color: Color(0xFFFF3366)),
                   ),
                 ),
@@ -745,7 +700,7 @@ class _CollectionsManageSheet extends ConsumerWidget {
                 if (context.mounted) Navigator.pop(context);
               }
             },
-            child: Text('Create',
+            child: const Text('Create',
               style: TextStyle(color: GradientHelper.primaryColor)),
           ),
         ],

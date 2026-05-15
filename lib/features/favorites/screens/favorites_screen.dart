@@ -12,6 +12,7 @@ import '../../../../core/utils/gradient_helper.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../models/quote.dart';
 import '../../../../providers.dart';
+import '../../../../widgets/glass_container.dart';
 
 enum SortOrder { newest, oldest, author, category }
 
@@ -203,15 +204,12 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   }
 
   Widget _buildSearchBar(bool isDark, WidgetRef ref) {
-    return Container(
+    return GlassContainer.adaptive(
+      context: context,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.08),
-        ),
-      ),
+      borderRadius: 16,
+      blurSigma: 6,
+      opacity: 0.08,
       child: Row(
         children: [
           Icon(Icons.search_rounded, color: isDark ? Colors.white54 : Colors.black38, size: 20),
@@ -257,22 +255,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isDark
-                    ? [Colors.white.withOpacity(0.05), Colors.white.withOpacity(0.02)]
-                    : [Colors.black.withOpacity(0.03), Colors.black.withOpacity(0.01)],
-              ),
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Icon(
-              isEmpty ? Icons.favorite_outline_rounded : Icons.search_off_rounded,
-              size: 36,
-              color: isDark ? Colors.white38 : Colors.black26,
-            ),
+          GlassIconContainer(
+            icon: isEmpty ? Icons.favorite_outline_rounded : Icons.search_off_rounded,
+            size: 36,
+            containerSize: 88,
+            borderRadius: 24,
           ),
           const SizedBox(height: 20),
           Text(
@@ -328,20 +315,18 @@ class _SortSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1333) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+      tintOpacity: isDark ? 0.08 : 0.45,
+      blurSigma: 12,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          blurRadius: 24,
+          offset: const Offset(0, 10),
+        ),
+      ],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -461,110 +446,103 @@ class _FavoriteQuoteCard extends StatelessWidget {
     final textColor = GradientHelper.textPrimary(isDark);
     final secondaryColor = GradientHelper.textSecondary(isDark);
 
-    return Container(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [Colors.white.withOpacity(0.04), Colors.white.withOpacity(0.02)]
-              : [Colors.white, Colors.white.withOpacity(0.95)],
+      padding: const EdgeInsets.all(20),
+      blurSigma: 8,
+      tintOpacity: isDark ? 0.04 : 0.3,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+          blurRadius: 16,
+          offset: const Offset(0, 6),
         ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              GlassContainer.adaptive(
+                context: context,
+                borderRadius: 10,
+                blurSigma: 4,
+                opacity: 0.08,
+                padding: const EdgeInsets.all(6),
+                child: Icon(
                   Icons.format_quote_rounded,
-                  size: 20,
+                  size: 16,
                   color: GradientHelper.primaryColor.withOpacity(0.6),
                 ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: onShare,
-                  child: Icon(
-                    Icons.share_outlined,
-                    size: 18,
-                    color: isDark ? Colors.white54 : Colors.black45,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                GestureDetector(
-                  onTap: onRemove,
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF3366).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.delete_rounded,
-                      size: 16,
-                      color: Color(0xFFFF3366),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              quote.text,
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: textColor,
-                height: 1.6,
               ),
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '— ${quote.author}',
-              style: GoogleFonts.lato(
-                fontSize: 13,
-                fontStyle: FontStyle.italic,
-                color: secondaryColor,
-                letterSpacing: 0.5,
-              ),
-            ),
-            if (quote.category != 'All') ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                decoration: BoxDecoration(
-                  color: GradientHelper.primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+              const Spacer(),
+              GestureDetector(
+                onTap: onShare,
+                child: Icon(
+                  Icons.share_outlined,
+                  size: 18,
+                  color: isDark ? Colors.white54 : Colors.black45,
                 ),
-                child: Text(
-                  quote.category,
-                  style: GoogleFonts.lato(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: GradientHelper.primaryColor,
-                    letterSpacing: 0.3,
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: onRemove,
+                child: GlassContainer.adaptive(
+                  context: context,
+                  borderRadius: 10,
+                  blurSigma: 4,
+                  padding: const EdgeInsets.all(6),
+                  child: const Icon(
+                    Icons.delete_rounded,
+                    size: 16,
+                    color: Color(0xFFFF3366),
                   ),
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            quote.text,
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: textColor,
+              height: 1.6,
+            ),
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '— ${quote.author}',
+            style: GoogleFonts.lato(
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+              color: secondaryColor,
+              letterSpacing: 0.5,
+            ),
+          ),
+          if (quote.category != 'All') ...[
+            const SizedBox(height: 8),
+            GlassContainer.adaptive(
+              context: context,
+              borderRadius: 8,
+              blurSigma: 4,
+              opacity: 0.08,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              child: Text(
+                quote.category,
+                style: GoogleFonts.lato(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: GradientHelper.primaryColor,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
           ],
-        ),
+        ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1);
   }
@@ -585,16 +563,14 @@ class _HeaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: GlassContainer.adaptive(
+        context: context,
         width: 44,
         height: 44,
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-          ),
-        ),
+        borderRadius: 14,
+        blurSigma: 6,
+        opacity: 0.1,
+        padding: const EdgeInsets.all(0),
         child: Icon(icon, size: 20, color: isDark ? Colors.white70 : Colors.black54),
       ),
     );

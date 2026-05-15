@@ -33,9 +33,7 @@ class GradientHelper {
   }
 
   static List<Color> getGradientForMode(int index, bool isDark) {
-    if (isDark) {
-      return _gradientsDark[index % _gradientsDark.length];
-    }
+    if (isDark) return _gradientsDark[index % _gradientsDark.length];
     return _gradientsLight[index % _gradientsLight.length];
   }
 
@@ -44,72 +42,74 @@ class GradientHelper {
       return const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          Color(0xFF0F0A1A),
-          Color(0xFF151025),
-        ],
+        colors: [Color(0xFF0F0A1A), Color(0xFF151025)],
       );
     }
     return const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [
-        Color(0xFFF8F5FC),
-        Color(0xFFEEEDF5),
-      ],
+      colors: [Color(0xFFF8F5FC), Color(0xFFEEEDF5)],
     );
   }
 
   static LinearGradient primaryGradient = const LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      _primaryPurple,
-      _primaryBlue,
-    ],
+    colors: [_primaryPurple, _primaryBlue],
   );
 
   static LinearGradient buttonGradient = const LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF9F7AEA),
-      Color(0xFF6366F1),
-    ],
+    colors: [Color(0xFF9F7AEA), Color(0xFF6366F1)],
   );
 
   static LinearGradient activeNavGradient = const LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [
-      _primaryPurple,
-      _primaryBlue,
-    ],
+    colors: [_primaryPurple, _primaryBlue],
   );
 
-  static Color get primaryColor => _primaryPurple;
-  static Color get secondaryColor => _primaryBlue;
-  static Color get accentCyan => _accentCyan;
-  static Color get accentPink => _accentPink;
+  static const Color primaryColor = _primaryPurple;
+  static const Color secondaryColor = _primaryBlue;
+  static const Color accentCyan = _accentCyan;
+  static const Color accentPink = _accentPink;
+  static const Color favoriteRed = Color(0xFFFF3366);
 
   static LinearGradient cardGradient(List<Color> colors, bool isDark) {
     return LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: colors.map((c) => c.withOpacity( isDark ? 0.25 : 0.3)).toList(),
+      colors: colors.map((c) => c.withOpacity(isDark ? 0.25 : 0.3)).toList(),
     );
   }
 
   static Color cardBackground(bool isDark) {
-    return isDark 
-        ? Colors.white.withOpacity( 0.06)
-        : Colors.white.withOpacity( 0.35);
+    return isDark
+        ? Colors.white.withOpacity(0.06)
+        : Colors.white.withOpacity(0.35);
   }
 
   static Color cardBorder(bool isDark) {
-    return isDark 
-        ? Colors.white.withOpacity( 0.12)
-        : Colors.black.withOpacity( 0.05);
+    return isDark
+        ? Colors.white.withOpacity(0.12)
+        : Colors.black.withOpacity(0.05);
+  }
+
+  static Color glassTint(bool isDark) {
+    return isDark
+        ? Colors.white.withOpacity(0.06)
+        : Colors.white.withOpacity(0.5);
+  }
+
+  static Color glassBorder(bool isDark) {
+    return isDark
+        ? Colors.white.withOpacity(0.08)
+        : Colors.black.withOpacity(0.06);
+  }
+
+  static Color glassShadow(bool isDark) {
+    return Colors.black.withOpacity(isDark ? 0.25 : 0.04);
   }
 
   static Color textPrimary(bool isDark) {

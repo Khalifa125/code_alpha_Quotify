@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/utils/gradient_helper.dart';
 import '../../../exports.dart';
+import '../../../widgets/glass_container.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -238,66 +239,71 @@ class _OnboardingPage extends StatelessWidget {
     final mutedColor = GradientHelper.textMuted(isDark);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              gradient: GradientHelper.primaryGradient,
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: GradientHelper.primaryColor.withOpacity(0.35),
-                  blurRadius: 30,
-                  offset: const Offset(0, 12),
-                  spreadRadius: -2,
-                ),
-              ],
-            ),
-            child: Icon(icon, color: Colors.white, size: 56),
-          ).animate().fadeIn(duration: 500.ms).scale(
-                begin: const Offset(0.7, 0.7),
-                curve: Curves.easeOutBack,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: GlassCard(
+        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 32),
+        tintOpacity: isDark ? 0.06 : 0.35,
+        blurSigma: 10,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                gradient: GradientHelper.primaryGradient,
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: GradientHelper.primaryColor.withOpacity(0.35),
+                    blurRadius: 30,
+                    offset: const Offset(0, 12),
+                    spreadRadius: -2,
+                  ),
+                ],
               ),
-          const SizedBox(height: 48),
-          Text(
-            title,
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-              letterSpacing: 0.5,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideY(begin: 0.15),
-          const SizedBox(height: 12),
-          Text(
-            subtitle,
-            style: GoogleFonts.lato(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: GradientHelper.primaryColor,
-              letterSpacing: 0.5,
-            ),
-            textAlign: TextAlign.center,
-          ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
-          const SizedBox(height: 24),
-          Text(
-            description,
-            style: GoogleFonts.lato(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: mutedColor,
-              height: 1.7,
-              letterSpacing: 0.2,
-            ),
-            textAlign: TextAlign.center,
-          ).animate().fadeIn(delay: 400.ms, duration: 500.ms).slideY(begin: 0.1),
-        ],
+              child: Icon(icon, color: Colors.white, size: 56),
+            ).animate().fadeIn(duration: 500.ms).scale(
+                  begin: const Offset(0.7, 0.7),
+                  curve: Curves.easeOutBack,
+                ),
+            const SizedBox(height: 36),
+            Text(
+              title,
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+                letterSpacing: 0.5,
+                height: 1.2,
+              ),
+              textAlign: TextAlign.center,
+            ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideY(begin: 0.15),
+            const SizedBox(height: 12),
+            Text(
+              subtitle,
+              style: GoogleFonts.lato(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: GradientHelper.primaryColor,
+                letterSpacing: 0.5,
+              ),
+              textAlign: TextAlign.center,
+            ).animate().fadeIn(delay: 300.ms, duration: 500.ms),
+            const SizedBox(height: 24),
+            Text(
+              description,
+              style: GoogleFonts.lato(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                color: mutedColor,
+                height: 1.7,
+                letterSpacing: 0.2,
+              ),
+              textAlign: TextAlign.center,
+            ).animate().fadeIn(delay: 400.ms, duration: 500.ms).slideY(begin: 0.1),
+          ],
+        ),
       ),
     );
   }

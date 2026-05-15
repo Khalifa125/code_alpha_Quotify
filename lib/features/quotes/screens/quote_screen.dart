@@ -14,6 +14,7 @@ import '../../../../providers.dart';
 import '../../../../models/quote.dart';
 import '../../../../models/collection.dart';
 import '../../../../widgets/error_widget.dart';
+import '../../../../widgets/glass_container.dart';
 import '../../../../widgets/loading_skeleton.dart';
 import '../../../../widgets/mood_chips.dart';
 import '../../../../widgets/new_quote_button.dart';
@@ -159,16 +160,13 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
   }
 
   Widget _buildSearchBar(bool isDark) {
-    return Container(
+    return GlassContainer.adaptive(
+      context: context,
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.08),
-        ),
-      ),
+      borderRadius: 16,
+      blurSigma: 6,
+      opacity: 0.08,
       child: Row(
         children: [
           Icon(Icons.search_rounded, color: isDark ? Colors.white54 : Colors.black45, size: 20),
@@ -218,26 +216,23 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         ref.read(themeModeProvider.notifier).state =
             themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
       },
-      child: Container(
+      child: GlassContainer.adaptive(
+        context: context,
         width: 44,
         height: 44,
-        decoration: BoxDecoration(
-          gradient: themeMode == ThemeMode.dark ? GradientHelper.primaryGradient : null,
-          color: themeMode == ThemeMode.light
-              ? (isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.04))
-              : null,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: GradientHelper.primaryColor.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+        borderRadius: 14,
+        blurSigma: 6,
+        opacity: themeMode == ThemeMode.dark ? 0.0 : 0.1,
+        gradient: themeMode == ThemeMode.dark ? GradientHelper.primaryGradient : null,
+        boxShadow: themeMode == ThemeMode.dark
+            ? [
+                BoxShadow(
+                  color: GradientHelper.primaryColor.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           child: Icon(
@@ -395,7 +390,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                 if (context.mounted) Navigator.pop(context);
               }
             },
-            child: Text('Create',
+            child: const Text('Create',
               style: TextStyle(color: GradientHelper.primaryColor)),
           ),
         ],
@@ -419,20 +414,18 @@ class _CollectionPickerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1333) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+      tintOpacity: isDark ? 0.08 : 0.45,
+      blurSigma: 12,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          blurRadius: 24,
+          offset: const Offset(0, 10),
+        ),
+      ],
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -457,15 +450,14 @@ class _CollectionPickerSheet extends StatelessWidget {
           else
             ...collections.map((c) => GestureDetector(
               onTap: () => onSelect(c.id),
-              child: Container(
+              child: GlassContainer.adaptive(
+                context: context,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                borderRadius: 14,
+                blurSigma: 4,
+                opacity: 0.08,
                 child: Row(children: [
-                  Icon(Icons.collections_bookmark_rounded, size: 20,
+                  const Icon(Icons.collections_bookmark_rounded, size: 20,
                     color: GradientHelper.primaryColor),
                   const SizedBox(width: 12),
                   Expanded(child: Text(c.name,
@@ -518,16 +510,14 @@ class _HeaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: GlassContainer.adaptive(
+        context: context,
         width: 44,
         height: 44,
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-          ),
-        ),
+        borderRadius: 14,
+        blurSigma: 6,
+        opacity: 0.1,
+        padding: const EdgeInsets.all(0),
         child: Icon(icon, size: 20, color: isDark ? Colors.white70 : Colors.black54),
       ),
     );
@@ -562,12 +552,12 @@ class _SwipeHintOverlayState extends State<_SwipeHintOverlay> {
       left: 0,
       right: 0,
       child: Center(
-        child: Container(
+        child: GlassContainer.adaptive(
+          context: context,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(20),
-          ),
+          borderRadius: 20,
+          blurSigma: 6,
+          opacity: 0.06,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
