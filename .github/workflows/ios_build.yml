@@ -61,17 +61,9 @@ jobs:
         ls -la
 
     - name: Upload IPA
-      if: success() && github.event_name == 'workflow_dispatch'
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: quotify-ipa
         path: build/ios/ipa/quotify-unsigned.ipa
-        retention-days: 1
-        
-    - name: Upload Simulator App
-      if: github.event_name == 'workflow_dispatch'
-      uses: actions/upload-artifact@v4
-      with:
-        name: quotify-simulator-app
-        path: build/ios/iphonesimulator/Runner.app
         retention-days: 1
