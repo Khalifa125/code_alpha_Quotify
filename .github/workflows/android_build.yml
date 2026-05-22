@@ -40,6 +40,7 @@ jobs:
 
     - name: Upload APK
       if: success() && github.event_name == 'workflow_dispatch'
+      continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
         name: quotify-apk
