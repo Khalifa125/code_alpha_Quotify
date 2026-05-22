@@ -19,6 +19,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnim;
   late Animation<double> _scaleAnim;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -35,6 +36,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _initApp();
   }
 
+  @override
+  void dispose() {
+    _disposed = true;
+    _fadeController.dispose();
+    super.dispose();
+  }
+
   Future<void> _initApp() async {
     await Future.wait([
       dotenv.load(fileName: '.env'),
@@ -46,12 +54,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final prefs = await SharedPreferences.getInstance();
     final showOnboarding = !(prefs.getBool('onboarding_complete') ?? false);
 
-    if (!mounted) return;
+    if (_disposed) return;
 
-    await Future.delayed(const Duration(milliseconds: 1200));
+    try {
+      await Future.delayed(const Duration(milliseconds: 1200));
+    } catch (_) {
+      return;
+    }
 
-    if (!mounted) return;
+    if (_disposed) return;
 
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pushReplacementNamed(
       showOnboarding ? '/onboarding' : '/home',
     );
@@ -67,12 +80,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       GoogleFonts.playfairDisplay();
       await GoogleFonts.pendingFonts();
     } catch (_) {}
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    super.dispose();
   }
 
   @override
@@ -156,7 +163,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(22),
-                          child: Image.asset('assets/icon1.png', fit: BoxFit.cover),
+                          child: Image.asset('assets/icon1.png', fit: BoxFit.cover, cacheWidth: 180, cacheHeight: 180),
                         ),
                       ),
                       const SizedBox(height: 16),

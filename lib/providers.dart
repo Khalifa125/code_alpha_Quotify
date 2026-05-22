@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/services.dart';
@@ -71,6 +72,17 @@ final favoritesProvider = StateNotifierProvider<FavoritesNotifier, List<Quote>>(
   return FavoritesNotifier(storage);
 });
 
+final filteredFavoritesProvider = Provider.autoDispose.family<List<Quote>, String>((ref, searchQuery) {
+  final favorites = ref.watch(favoritesProvider);
+  if (searchQuery.isEmpty) return favorites;
+  final query = searchQuery.toLowerCase();
+  return favorites.where((q) =>
+    q.text.toLowerCase().contains(query) ||
+    q.author.toLowerCase().contains(query) ||
+    q.category.toLowerCase().contains(query),
+  ).toList();
+});
+
 final collectionsProvider = StateNotifierProvider<CollectionsNotifier, List<Collection>>((ref) {
   return CollectionsNotifier();
 });
@@ -83,13 +95,13 @@ class CollectionsNotifier extends StateNotifier<List<Collection>> {
   Future<void> _loadCollections() async {
     final prefs = await SharedPreferences.getInstance();
     final collectionsJson = prefs.getStringList('collections') ?? [];
-    state = collectionsJson.map((json) {
-      final parts = json.split('|');
+    state = collectionsJson.map((jsonStr) {
+      final map = jsonDecode(jsonStr) as Map<String, dynamic>;
       return Collection(
-        id: parts[0],
-        name: parts[1],
-        quoteIds: parts[2].split(',').where((s) => s.isNotEmpty).toList(),
-        createdAt: DateTime.parse(parts[3]),
+        id: map['id'] as String,
+        name: map['name'] as String,
+        quoteIds: (map['quoteIds'] as List<dynamic>).cast<String>(),
+        createdAt: DateTime.parse(map['createdAt'] as String),
       );
     }).toList();
   }
@@ -97,7 +109,12 @@ class CollectionsNotifier extends StateNotifier<List<Collection>> {
   Future<void> _saveCollections() async {
     final prefs = await SharedPreferences.getInstance();
     final collectionsJson = state.map((c) =>
-      '${c.id}|${c.name}|${c.quoteIds.join(',')}|${c.createdAt.toIso8601String()}'
+      jsonEncode({
+        'id': c.id,
+        'name': c.name,
+        'quoteIds': c.quoteIds,
+        'createdAt': c.createdAt.toIso8601String(),
+      })
     ).toList();
     await prefs.setStringList('collections', collectionsJson);
   }

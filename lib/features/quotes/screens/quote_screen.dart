@@ -270,8 +270,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
       );
     }
     if (state.quote != null) {
-      final favorites = ref.watch(favoritesProvider);
-      final isFavorite = favorites.any((q) => q.text == state.quote!.text && q.author == state.quote!.author);
+      final isFavorite = ref.watch(favoritesProvider.select((f) =>
+        f.any((q) => q.text == state.quote!.text && q.author == state.quote!.author)));
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0),
         child: Column(
@@ -309,7 +309,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
               },
               onFavorite: () {
                 final quote = state.quote!;
-                final wasFavorite = ref.read(favoritesProvider).contains(quote);
+                final wasFavorite = ref.read(favoritesProvider.notifier).isFavorite(quote);
                 ref.read(favoritesProvider.notifier).toggleFavorite(quote);
                 HapticFeedback.lightImpact();
                 if (wasFavorite && context.mounted) {
@@ -363,6 +363,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       enableDrag: true,
+      isScrollControlled: true,
       useSafeArea: true,
       builder: (context) => _CollectionPickerSheet(
         collections: collections,
@@ -384,51 +385,25 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
   }
 
   void _showCreateCollectionDialog(BuildContext context, WidgetRef ref, Quote quote) {
-    final nameController = TextEditingController();
-    showDialog<void>(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet<Map<String, dynamic>>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xF01A1333) : const Color(0xF0FFFFFF),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('New Collection',
-          style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w600)),
-        content: TextField(
-          controller: nameController,
-          autofocus: true,
-          textInputAction: TextInputAction.done,
-          onSubmitted: (_) => _onCreateCollection(context, ref, nameController, quote),
-          decoration: InputDecoration(
-            hintText: 'Collection name',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => _onCreateCollection(context, ref, nameController, quote),
-            child: const Text('Create',
-              style: TextStyle(color: GradientHelper.primaryColor)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _onCreateCollection(BuildContext context, WidgetRef ref, TextEditingController nameController, Quote quote) async {
-    final name = nameController.text.trim();
-    if (name.isNotEmpty) {
-      final id = await ref.read(collectionsProvider.notifier).createCollection(name);
-      await ref.read(collectionsProvider.notifier).addQuoteToCollection(
-        id,
-        quote.text.hashCode.toString(),
-      );
-      HapticFeedback.lightImpact();
-      if (context.mounted) Navigator.pop(context);
-    }
+      backgroundColor: Colors.transparent,
+      enableDrag: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => _NewDeckSheet(quote: quote, isDark: isDark),
+    ).then((result) async {
+      if (result != null && context.mounted) {
+        final name = result['name'] as String;
+        final id = await ref.read(collectionsProvider.notifier).createCollection(name);
+        await ref.read(collectionsProvider.notifier).addQuoteToCollection(
+          id,
+          quote.text.hashCode.toString(),
+        );
+        HapticFeedback.lightImpact();
+      }
+    });
   }
 }
 
@@ -459,7 +434,9 @@ class _CollectionPickerSheet extends StatelessWidget {
           offset: const Offset(0, 10),
         ),
       ],
-      child: Column(
+      child: SafeArea(
+        child: SingleChildScrollView(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(width: 40, height: 4,
@@ -521,8 +498,163 @@ class _CollectionPickerSheet extends StatelessWidget {
               )),
             ),
           ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+          SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 8),
         ],
+      ),
+      ),
+      ),
+    );
+  }
+}
+
+class _NewDeckSheet extends StatefulWidget {
+  final Quote quote;
+  final bool isDark;
+
+  const _NewDeckSheet({required this.quote, required this.isDark});
+
+  @override
+  State<_NewDeckSheet> createState() => _NewDeckSheetState();
+}
+
+class _NewDeckSheetState extends State<_NewDeckSheet> {
+  final TextEditingController _nameController = TextEditingController();
+  int _selectedColor = 0;
+
+  static const List<Color> _deckColors = [
+    Color(0xFF8B5CF6),
+    Color(0xFF6366F1),
+    Color(0xFF3B82F6),
+    Color(0xFF06B6D4),
+    Color(0xFF10B981),
+    Color(0xFF84CC16),
+    Color(0xFFF59E0B),
+    Color(0xFFEF4444),
+    Color(0xFFEC4899),
+    Color(0xFFA855F7),
+  ];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      tintOpacity: widget.isDark ? 0.08 : 0.45,
+      blurSigma: 12,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: widget.isDark ? 0.3 : 0.08),
+          blurRadius: 24,
+          offset: const Offset(0, 10),
+        ),
+      ],
+      child: SafeArea(
+        child: SingleChildScrollView(
+        child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(width: 40, height: 4, alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: widget.isDark ? Colors.white24 : Colors.black12,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text('New Deck',
+            style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600,
+              color: widget.isDark ? Colors.white : const Color(0xFF1E1B2E)),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _nameController,
+            autofocus: true,
+            textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+              hintText: 'Deck name',
+              hintStyle: GoogleFonts.lato(
+                color: widget.isDark ? Colors.white38 : Colors.black38),
+              filled: true,
+              fillColor: widget.isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.black.withValues(alpha: 0.03),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+            style: GoogleFonts.lato(
+              color: widget.isDark ? Colors.white : Colors.black87),
+          ),
+          const SizedBox(height: 20),
+          Text('Deck Color',
+            style: GoogleFonts.lato(fontSize: 13, fontWeight: FontWeight.w500,
+              color: widget.isDark ? Colors.white54 : Colors.black54),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: List.generate(_deckColors.length, (i) {
+              final isSelected = i == _selectedColor;
+              return GestureDetector(
+                onTap: () => setState(() => _selectedColor = i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 44, height: 44,
+                  decoration: BoxDecoration(
+                    color: _deckColors[i],
+                    borderRadius: BorderRadius.circular(14),
+                    border: isSelected
+                        ? Border.all(color: Colors.white, width: 3)
+                        : null,
+                    boxShadow: isSelected ? [
+                      BoxShadow(
+                        color: _deckColors[i].withValues(alpha: 0.5),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ] : null,
+                  ),
+                  child: isSelected
+                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
+                      : null,
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 24),
+          GestureDetector(
+            onTap: () {
+              final name = _nameController.text.trim();
+              if (name.isNotEmpty) {
+                Navigator.pop(context, {'name': name, 'color': _selectedColor});
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                gradient: GradientHelper.primaryGradient,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Center(
+                child: Text('Create Deck',
+                  style: GoogleFonts.lato(fontWeight: FontWeight.w600, color: Colors.white)),
+              ),
+            ),
+          ),
+          SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 8),
+        ],
+      ),
+      ),
       ),
     );
   }

@@ -200,6 +200,8 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
         letterSpacing: 0.3,
       ),
       textAlign: TextAlign.center,
+      maxLines: 8,
+      overflow: TextOverflow.ellipsis,
     ).animate().fadeIn(delay: 300.ms, duration: 600.ms).slideY(begin: 0.1, curve: Curves.easeOutCubic);
   }
 
@@ -328,6 +330,7 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
       context: context,
       backgroundColor: Colors.transparent,
       enableDrag: true,
+      isScrollControlled: true,
       useSafeArea: true,
       builder: (context) => _QuickActionSheet(
         onCopy: () {
@@ -428,7 +431,9 @@ class _QuickActionSheet extends StatelessWidget {
           offset: const Offset(0, 10),
         ),
       ],
-      child: Column(
+      child: SafeArea(
+        child: SingleChildScrollView(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
@@ -449,8 +454,10 @@ class _QuickActionSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
             children: [
               _ActionButton(
                 icon: Icons.copy_rounded,
@@ -485,8 +492,10 @@ class _QuickActionSheet extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+          SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 8),
         ],
+      ),
+      ),
       ),
     );
   }
@@ -711,7 +720,7 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget>
                             ? Colors.white
                             : (widget.isDark
                                 ? Colors.white54
-                                : const Color(0xFF9B9B9B)),
+                                : const Color(0xFF767676)),
                       ),
                     ),
                   ),

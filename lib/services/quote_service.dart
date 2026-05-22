@@ -11,8 +11,8 @@ class QuoteService {
   
   static const String _zenQuotesUrl = 'https://zenquotes.io/api/random';
   static const String _quotableUrl = 'https://api.quotable.io/random';
-  static const Duration _timeout = Duration(seconds: 4);
-  static const int _maxRetries = 2;
+  static const Duration _timeout = Duration(seconds: 3);
+  static const int _maxRetries = 1;
   static const String _cacheKey = 'cached_quote';
   static const int _cacheLimit = 10;
 
@@ -35,11 +35,8 @@ class QuoteService {
         return [quote, ...offlineQuotes];
       }
     } catch (_) {}
-    final cached = await _loadFromPrefs();
-    if (cached != null) {
-      return [cached, ...offlineQuotes.where((q) => q.text != cached.text)];
-    }
-    return offlineQuotes;
+    final shuffled = List<Quote>.from(offlineQuotes)..shuffle(_random);
+    return shuffled;
   }
 
   Future<Quote?> _fetchWithRetry() async {

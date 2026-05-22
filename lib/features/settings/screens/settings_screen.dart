@@ -161,7 +161,7 @@ class SettingsScreen extends ConsumerWidget {
               'Customize your experience',
               style: GoogleFonts.lato(
                 fontSize: 13,
-                color: isDark ? Colors.white54 : const Color(0xFF9B9B9B),
+                color: isDark ? Colors.white54 : const Color(0xFF767676),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -200,7 +200,7 @@ class SettingsScreen extends ConsumerWidget {
                 'Made with ',
                 style: GoogleFonts.lato(
                   fontSize: 12,
-                  color: isDark ? Colors.white38 : const Color(0xFF9B9B9B),
+                  color: isDark ? Colors.white38 : const Color(0xFF767676),
                 ),
               ),
               const Icon(Icons.favorite_rounded, size: 12, color: Color(0xFFFF3366)),
@@ -267,7 +267,7 @@ class _SettingsTile extends StatelessWidget {
             opacity: 0.05,
             padding: const EdgeInsets.all(8),
             child: Icon(Icons.chevron_right_rounded,
-                color: isDark ? Colors.white38 : const Color(0xFF9B9B9B), size: 22),
+                color: isDark ? Colors.white38 : const Color(0xFF767676), size: 22),
           ),
         ]),
       ),
@@ -532,6 +532,7 @@ class _CollectionsTile extends ConsumerWidget {
       context: context,
       backgroundColor: Colors.transparent,
       enableDrag: true,
+      isScrollControlled: true,
       useSafeArea: true,
       builder: (context) => _CollectionsManageSheet(isDark: isDark),
     );
@@ -558,7 +559,9 @@ class _CollectionsManageSheet extends ConsumerWidget {
           offset: const Offset(0, 10),
         ),
       ],
-      child: Column(
+      child: SafeArea(
+        child: SingleChildScrollView(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(width: 40, height: 4,
@@ -661,8 +664,10 @@ class _CollectionsManageSheet extends ConsumerWidget {
               )),
             ),
           ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+          SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 8),
         ],
+      ),
+      ),
       ),
     );
   }
@@ -698,16 +703,22 @@ class _CollectionsManageSheet extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              nameController.dispose();
+              Navigator.pop(context);
+            },
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => _onCreateCollection(context, ref, nameController),
+            onPressed: () {
+              _onCreateCollection(context, ref, nameController);
+              nameController.dispose();
+            },
             child: const Text('Create',
               style: TextStyle(color: GradientHelper.primaryColor)),
           ),
         ],
       ),
-    );
+    ).then((_) => nameController.dispose());
   }
 }

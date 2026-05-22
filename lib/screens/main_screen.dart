@@ -25,7 +25,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final favorites = ref.watch(favoritesProvider);
+    final favoritesLength = ref.watch(favoritesProvider.select((f) => f.length));
 
     return Scaffold(
       extendBody: true,
@@ -68,7 +68,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
-        favoritesCount: favorites.length,
+        favoritesCount: favoritesLength,
         onTap: (index) {
           setState(() => _currentIndex = index);
           ref.read(currentTabIndexProvider.notifier).state = index;

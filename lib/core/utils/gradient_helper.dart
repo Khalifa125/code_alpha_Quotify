@@ -94,6 +94,6 @@ class GradientHelper {
   }
 
   static Color textMuted(bool isDark) {
-    return isDark ? Colors.white54 : const Color(0xFF9B9B9B);
+    return isDark ? Colors.white54 : const Color(0xFF767676);
   }
 }

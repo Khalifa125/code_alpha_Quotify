@@ -16,6 +16,13 @@ class GlassContainer extends StatelessWidget {
   final AlignmentGeometry? alignment;
   final Clip clipBehavior;
 
+  static final Map<int, ImageFilter> _filterCache = {};
+
+  static ImageFilter _cachedBlur(double sigma) {
+    final key = (sigma * 10).round();
+    return _filterCache.putIfAbsent(key, () => ImageFilter.blur(sigmaX: sigma, sigmaY: sigma));
+  }
+
   const GlassContainer({
     super.key,
     required this.child,
@@ -82,7 +89,7 @@ class GlassContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         clipBehavior: clipBehavior,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+        filter: GlassContainer._cachedBlur(blurSigma),
           child: Container(
             alignment: alignment,
             padding: padding,
@@ -150,7 +157,7 @@ class GlassCard extends StatelessWidget {
     final glassChild = ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+        filter: GlassContainer._cachedBlur(blurSigma),
         child: Container(
           padding: padding,
           decoration: BoxDecoration(

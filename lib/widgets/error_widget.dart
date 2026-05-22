@@ -47,7 +47,7 @@ class QuoteErrorWidget extends StatelessWidget {
       child: Icon(
         Icons.wifi_off_rounded,
         size: 48,
-        color: isDark ? Colors.white38 : const Color(0xFF9B9B9B),
+        color: isDark ? Colors.white38 : const Color(0xFF767676),
       ),
     ).animate().fadeIn(delay: 200.ms, duration: 500.ms).scale(begin: const Offset(0.8, 0.8), duration: 500.ms);
   }
