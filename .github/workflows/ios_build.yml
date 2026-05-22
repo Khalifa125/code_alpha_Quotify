@@ -66,11 +66,11 @@ jobs:
       with:
         name: quotify-ipa
         path: build/ios/ipa/quotify-unsigned.ipa
-        retention-days: 30
-
+        retention-days: 1
+        
     - name: Upload Simulator App
       uses: actions/upload-artifact@v4
       with:
         name: quotify-simulator-app
         path: build/ios/iphonesimulator/Runner.app
-        retention-days: 7
+        retention-days: 1

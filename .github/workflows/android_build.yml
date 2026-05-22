@@ -44,4 +44,4 @@ jobs:
       with:
         name: quotify-apk
         path: build/app/outputs/flutter-apk/app-release.apk
-        retention-days: 30
+        retention-days: 1
