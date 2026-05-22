@@ -1,4 +1,3 @@
-// ignore_for_file: deprecated_member_use
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -83,7 +82,8 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
 
     return Screenshot(
       controller: widget.screenshotController,
-      child: GestureDetector(
+      child: RepaintBoundary(
+        child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onHorizontalDragUpdate: _onHorizontalDragUpdate,
         onHorizontalDragEnd: _onHorizontalDragEnd,
@@ -109,7 +109,7 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
                       end: Alignment.bottomRight,
                       colors: [
                         GradientHelper.cardBackground(isDark),
-                        GradientHelper.cardBackground(isDark).withOpacity(0.6),
+                        GradientHelper.cardBackground(isDark).withValues(alpha: 0.6),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(32),
@@ -119,13 +119,13 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: gradientColors[0].withOpacity(isDark ? 0.3 : 0.15),
+                        color: gradientColors[0].withValues(alpha: isDark ? 0.3 : 0.15),
                         blurRadius: 40,
                         offset: const Offset(0, 20),
                         spreadRadius: -5,
                       ),
                       BoxShadow(
-                        color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                        color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                         blurRadius: 30,
                         offset: const Offset(0, 10),
                       ),
@@ -161,6 +161,7 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
               ),
         ),
       ),
+      ),
     );
   }
 
@@ -173,7 +174,7 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: gradientColors[0].withOpacity(0.4),
+            color: gradientColors[0].withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -213,7 +214,7 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
             gradient: LinearGradient(
               colors: [
                 Colors.transparent,
-                gradientColors[0].withOpacity(0.6),
+                gradientColors[0].withValues(alpha: 0.6),
                 Colors.transparent,
               ],
             ),
@@ -235,7 +236,7 @@ class _ModernQuoteCardState extends State<ModernQuoteCard> {
             gradient: LinearGradient(
               colors: [
                 Colors.transparent,
-                mutedColor.withOpacity(0.5),
+                mutedColor.withValues(alpha: 0.5),
                 Colors.transparent,
               ],
             ),
@@ -370,7 +371,7 @@ class _CopiedToast extends StatelessWidget {
       gradient: GradientHelper.primaryGradient,
       boxShadow: [
         BoxShadow(
-          color: GradientHelper.primaryColor.withOpacity(0.4),
+          color: GradientHelper.primaryColor.withValues(alpha: 0.4),
           blurRadius: 16,
           offset: const Offset(0, 4),
         ),
@@ -422,7 +423,7 @@ class _QuickActionSheet extends StatelessWidget {
       blurSigma: 12,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
           blurRadius: 24,
           offset: const Offset(0, 10),
         ),
@@ -508,7 +509,12 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      label: label,
+      button: true,
+      child: Tooltip(
+        message: label,
+        child: GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
@@ -521,10 +527,10 @@ class _ActionButton extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: isActive ? const LinearGradient(colors: [Color(0xFFFF3366), Color(0xFFFF6B6B)]) : null,
-                  color: isActive ? null : (isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.35)),
+                  color: isActive ? null : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.35)),
                   borderRadius: BorderRadius.circular(16),
                   border: isActive ? null : Border.all(
-                    color: (isDark ? Colors.white : Colors.black).withOpacity(isDark ? 0.08 : 0.06),
+                    color: (isDark ? Colors.white : Colors.black).withValues(alpha: isDark ? 0.08 : 0.06),
                   ),
                 ),
                 child: Icon(
@@ -544,6 +550,8 @@ class _ActionButton extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      ),
       ),
     );
   }
@@ -674,20 +682,20 @@ class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget>
                         color: isActive
                             ? null
                             : (widget.isDark
-                                ? Colors.white.withOpacity(0.08)
-                                : Colors.black.withOpacity(0.04)),
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : Colors.black.withValues(alpha: 0.04)),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isActive
                               ? Colors.transparent
                               : (widget.isDark
-                                  ? Colors.white.withOpacity(0.1)
-                                  : Colors.black.withOpacity(0.05)),
+                                  ? Colors.white.withValues(alpha: 0.1)
+                                  : Colors.black.withValues(alpha: 0.05)),
                         ),
                         boxShadow: isActive
                             ? [
                                 BoxShadow(
-                                  color: const Color(0xFFFF3366).withOpacity(0.5),
+                                  color: const Color(0xFFFF3366).withValues(alpha: 0.5),
                                   blurRadius: 16,
                                   offset: const Offset(0, 6),
                                 ),

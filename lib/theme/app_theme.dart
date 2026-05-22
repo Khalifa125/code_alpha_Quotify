@@ -32,7 +32,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radius)),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: Colors.white.withOpacity(0.92),
+        backgroundColor: Colors.white.withValues(alpha: 0.92),
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radius)),
       ),
@@ -71,7 +71,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radius)),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: const Color(0xFF1A1333).withOpacity(0.95),
+        backgroundColor: const Color(0xFF1A1333).withValues(alpha: 0.95),
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_radius)),
       ),

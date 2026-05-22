@@ -1,7 +1,5 @@
-// ignore_for_file: deprecated_member_use
 
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -9,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/utils/gradient_helper.dart';
-import '../../../../theme/app_theme.dart';
 import '../../../../models/quote.dart';
 import '../../../../providers.dart';
 import '../../../../widgets/glass_container.dart';
@@ -24,31 +21,16 @@ class FavoritesScreen extends ConsumerStatefulWidget {
 }
 
 class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
-  final ScrollController _scrollController = ScrollController();
   bool _isSearching = false;
   SortOrder _sortOrder = SortOrder.newest;
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
 
   @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
   void dispose() {
-    _scrollController.dispose();
     _searchController.dispose();
     _debounce?.cancel();
     super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      // Load more if needed
-    }
   }
 
   void _onSearchChanged(String value) {
@@ -92,11 +74,13 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: Scrollbar(
-        controller: _scrollController,
+        child: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(favoritesProvider);
+          await Future.delayed(const Duration(milliseconds: 300));
+        },
         child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
@@ -133,6 +117,22 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                 .read(favoritesProvider.notifier)
                                 .toggleFavorite(quote);
                             HapticFeedback.mediumImpact();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Quote removed'),
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: const Duration(seconds: 3),
+                                  action: SnackBarAction(
+                                    label: 'Undo',
+                                    onPressed: () => ref
+                                        .read(favoritesProvider.notifier)
+                                        .toggleFavorite(quote),
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           onShare: () {
                             Share.share(
@@ -193,12 +193,14 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                 icon: Icons.search_rounded,
                 onTap: () => setState(() => _isSearching = true),
                 isDark: isDark,
+                tooltip: 'Search favorites',
               ),
             const SizedBox(width: 8),
             _HeaderButton(
               icon: Icons.sort_rounded,
               onTap: () => _showSortSheet(isDark),
               isDark: isDark,
+              tooltip: 'Sort favorites',
             ),
           ],
         ),
@@ -327,7 +329,7 @@ class _SortSheet extends StatelessWidget {
       blurSigma: 12,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
           blurRadius: 24,
           offset: const Offset(0, 10),
         ),
@@ -408,7 +410,7 @@ class _SortOption extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             gradient: isSelected ? GradientHelper.primaryGradient : null,
-            color: isSelected ? null : (isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03)),
+            color: isSelected ? null : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Row(
@@ -458,7 +460,7 @@ class _FavoriteQuoteCard extends StatelessWidget {
       tintOpacity: isDark ? 0.04 : 0.3,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
           blurRadius: 16,
           offset: const Offset(0, 6),
         ),
@@ -477,7 +479,7 @@ class _FavoriteQuoteCard extends StatelessWidget {
                 child: Icon(
                   Icons.format_quote_rounded,
                   size: 16,
-                  color: GradientHelper.primaryColor.withOpacity(0.6),
+                  color: GradientHelper.primaryColor.withValues(alpha: 0.6),
                 ),
               ),
               const Spacer(),
@@ -557,16 +559,20 @@ class _HeaderButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool isDark;
+  final String tooltip;
 
   const _HeaderButton({
     required this.icon,
     required this.onTap,
     required this.isDark,
+    this.tooltip = '',
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
       onTap: onTap,
       child: GlassContainer.adaptive(
         context: context,
@@ -577,6 +583,7 @@ class _HeaderButton extends StatelessWidget {
         opacity: 0.1,
         padding: const EdgeInsets.all(0),
         child: Icon(icon, size: 20, color: isDark ? Colors.white70 : Colors.black54),
+      ),
       ),
     );
   }

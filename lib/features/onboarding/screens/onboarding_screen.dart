@@ -3,10 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../core/utils/gradient_helper.dart';
 import '../../../exports.dart';
-import '../../../screens/main_screen.dart';
-import '../../../widgets/glass_container.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -67,6 +64,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: SafeArea(
           child: Column(
             children: [
+              if (_currentPage < 3)
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8, right: 16),
+                    child: TextButton(
+                      onPressed: _completeOnboarding,
+                      child: Text('Skip', style: GoogleFonts.lato(
+                        fontSize: 14,
+                        color: isDark ? Colors.white54 : Colors.black45,
+                      )),
+                    ),
+                  ),
+                ),
               Expanded(
                 child: PageView(
                   controller: _pageController,
@@ -153,11 +164,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             gradient: isActive ? GradientHelper.primaryGradient : null,
             color: isActive
                 ? null
-                : (isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1)),
+                : (isDark ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.1)),
             borderRadius: BorderRadius.circular(4),
             boxShadow: isActive ? [
               BoxShadow(
-                color: GradientHelper.primaryColor.withOpacity(0.4),
+                color: GradientHelper.primaryColor.withValues(alpha: 0.4),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -184,7 +195,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: GradientHelper.primaryColor.withOpacity(0.4),
+              color: GradientHelper.primaryColor.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -221,7 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: GradientHelper.primaryColor.withOpacity(0.4),
+              color: GradientHelper.primaryColor.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -279,7 +290,7 @@ class _OnboardingPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(32),
                 boxShadow: [
                   BoxShadow(
-                    color: GradientHelper.primaryColor.withOpacity(0.35),
+                    color: GradientHelper.primaryColor.withValues(alpha: 0.35),
                     blurRadius: 30,
                     offset: const Offset(0, 12),
                     spreadRadius: -2,

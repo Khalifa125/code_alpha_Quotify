@@ -10,7 +10,9 @@ class LoadingSkeleton extends StatelessWidget {
     final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
     final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
 
-    return Padding(
+    return ExcludeSemantics(
+      child: RepaintBoundary(
+      child: Padding(
       padding: const EdgeInsets.all(24),
       child: Shimmer.fromColors(
         baseColor: baseColor,
@@ -53,6 +55,8 @@ class LoadingSkeleton extends StatelessWidget {
             );
           },
         ),
+      ),
+      ),
       ),
     );
   }

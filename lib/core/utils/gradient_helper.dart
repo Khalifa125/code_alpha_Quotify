@@ -25,13 +25,6 @@ class GradientHelper {
 
   static const Color _primaryPurple = Color(0xFF8B5CF6);
   static const Color _primaryBlue = Color(0xFF6366F1);
-  static const Color _accentCyan = Color(0xFF22D3EE);
-  static const Color _accentPink = Color(0xFFEC4899);
-
-  static List<Color> getGradient(int index) {
-    return _gradientsLight[index % _gradientsLight.length];
-  }
-
   static List<Color> getGradientForMode(int index, bool isDark) {
     if (isDark) return _gradientsDark[index % _gradientsDark.length];
     return _gradientsLight[index % _gradientsLight.length];
@@ -64,52 +57,32 @@ class GradientHelper {
     colors: [Color(0xFF9F7AEA), Color(0xFF6366F1)],
   );
 
-  static LinearGradient activeNavGradient = const LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [_primaryPurple, _primaryBlue],
-  );
-
   static const Color primaryColor = _primaryPurple;
   static const Color secondaryColor = _primaryBlue;
-  static const Color accentCyan = _accentCyan;
-  static const Color accentPink = _accentPink;
   static const Color favoriteRed = Color(0xFFFF3366);
-
-  static LinearGradient cardGradient(List<Color> colors, bool isDark) {
-    return LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: colors.map((c) => c.withOpacity(isDark ? 0.25 : 0.3)).toList(),
-    );
-  }
 
   static Color cardBackground(bool isDark) {
     return isDark
-        ? Colors.white.withOpacity(0.06)
-        : Colors.white.withOpacity(0.35);
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.white.withValues(alpha: 0.35);
   }
 
   static Color cardBorder(bool isDark) {
     return isDark
-        ? Colors.white.withOpacity(0.12)
-        : Colors.black.withOpacity(0.05);
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.black.withValues(alpha: 0.05);
   }
 
   static Color glassTint(bool isDark) {
     return isDark
-        ? Colors.white.withOpacity(0.06)
-        : Colors.white.withOpacity(0.5);
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.white.withValues(alpha: 0.5);
   }
 
   static Color glassBorder(bool isDark) {
     return isDark
-        ? Colors.white.withOpacity(0.08)
-        : Colors.black.withOpacity(0.06);
-  }
-
-  static Color glassShadow(bool isDark) {
-    return Colors.black.withOpacity(isDark ? 0.25 : 0.04);
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
   }
 
   static Color textPrimary(bool isDark) {

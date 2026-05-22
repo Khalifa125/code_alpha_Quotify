@@ -61,7 +61,7 @@ class GlassContainer extends StatelessWidget {
       gradient: gradient,
       boxShadow: boxShadow,
       border: BorderSide(
-        color: (dark ? Colors.white : Colors.black).withOpacity(dark ? 0.08 : 0.06),
+        color: (dark ? Colors.white : Colors.black).withValues(alpha: dark ? 0.08 : 0.06),
         width: 0.5,
       ),
       child: child,
@@ -88,12 +88,12 @@ class GlassContainer extends StatelessWidget {
             padding: padding,
             decoration: BoxDecoration(
               gradient: gradient,
-              color: effectiveTint.withOpacity(effectiveOpacity),
+              color: effectiveTint.withValues(alpha: effectiveOpacity),
               borderRadius: BorderRadius.circular(borderRadius),
               border: border != null ? Border.fromBorderSide(border!) : null,
               boxShadow: boxShadow ?? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.12 : 0.03),
+                  color: Colors.black.withValues(alpha: isDark ? 0.12 : 0.03),
                   blurRadius: 4,
                   blurStyle: BlurStyle.inner,
                 ),
@@ -155,22 +155,22 @@ class GlassCard extends StatelessWidget {
           padding: padding,
           decoration: BoxDecoration(
             gradient: gradient,
-            color: effectiveTint.withOpacity(effectiveOpacity),
+            color: effectiveTint.withValues(alpha: effectiveOpacity),
             borderRadius: BorderRadius.circular(borderRadius),
             border: border != null
                 ? Border.fromBorderSide(border!)
                 : Border.all(
-                    color: (isDark ? Colors.white : Colors.black).withOpacity(isDark ? 0.08 : 0.06),
+                    color: (isDark ? Colors.white : Colors.black).withValues(alpha: isDark ? 0.08 : 0.06),
                     width: 0.5,
                   ),
             boxShadow: boxShadow ?? [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.08 : 0.02),
+                color: Colors.black.withValues(alpha: isDark ? 0.08 : 0.02),
                 blurRadius: 4,
                 blurStyle: BlurStyle.inner,
               ),
@@ -224,7 +224,7 @@ class GlassIconContainer extends StatelessWidget {
       height: containerSize,
       decoration: BoxDecoration(
         gradient: backgroundColor != null ? null : GradientHelper.primaryGradient,
-        color: backgroundColor ?? (isDark ? Colors.white.withOpacity(0.06) : null),
+        color: backgroundColor ?? (isDark ? Colors.white.withValues(alpha: 0.06) : null),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: Icon(icon, size: size, color: color ?? Colors.white),

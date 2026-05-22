@@ -9,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../../core/utils/gradient_helper.dart';
-import '../../../../theme/app_theme.dart';
 import '../../../../providers.dart';
 import '../../../../models/quote.dart';
 import '../../../../models/collection.dart';
@@ -149,6 +148,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                   icon: Icons.search_rounded,
                   onTap: () => setState(() => _isSearching = true),
                   isDark: isDark,
+                  tooltip: 'Search quotes',
                 ),
               const SizedBox(width: 8),
               _buildThemeToggle(context, ref, isDark, textColor),
@@ -209,12 +209,20 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
 
   Widget _buildThemeToggle(BuildContext context, WidgetRef ref, bool isDark, Color textColor) {
     final themeMode = ref.watch(themeModeProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
 
-    return GestureDetector(
+    return Semantics(
+      label: isDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
+      button: true,
+      child: Tooltip(
+        message: isDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
+        child: GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
+        final isSystemDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+        final actuallyDark = themeMode == ThemeMode.system ? isSystemDark : isDarkMode;
         ref.read(themeModeProvider.notifier).state =
-            themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+            actuallyDark ? ThemeMode.light : ThemeMode.dark;
       },
       child: GlassContainer.adaptive(
         context: context,
@@ -227,7 +235,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         boxShadow: themeMode == ThemeMode.dark
             ? [
                 BoxShadow(
-                  color: GradientHelper.primaryColor.withOpacity(0.3),
+                  color: GradientHelper.primaryColor.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -243,10 +251,12 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
           ),
         ),
       ),
+      ),
+      ),
     ).animate().fadeIn(delay: 200.ms, duration: 400.ms);
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, dynamic state, bool isDark, bool isSmallHeight, ScreenshotController controller) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, QuoteState state, bool isDark, bool isSmallHeight, ScreenshotController controller) {
     if (state.isLoading && state.quote == null) {
       return const Center(child: LoadingSkeleton());
     }
@@ -298,8 +308,26 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                 }
               },
               onFavorite: () {
-                ref.read(favoritesProvider.notifier).toggleFavorite(state.quote!);
+                final quote = state.quote!;
+                final wasFavorite = ref.read(favoritesProvider).contains(quote);
+                ref.read(favoritesProvider.notifier).toggleFavorite(quote);
                 HapticFeedback.lightImpact();
+                if (wasFavorite && context.mounted) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Quote removed from favorites'),
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 3),
+                      action: SnackBarAction(
+                        label: 'Undo',
+                        onPressed: () => ref
+                            .read(favoritesProvider.notifier)
+                            .toggleFavorite(quote),
+                      ),
+                    ),
+                  );
+                }
               },
               onAddToCollection: () => _showCollectionDialog(context, ref, state.quote!),
               onNext: () => ref.read(quoteControllerProvider.notifier).nextQuote(),
@@ -316,7 +344,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
     return const SizedBox.shrink();
   }
 
-  Widget _buildBottomSection(BuildContext context, WidgetRef ref, dynamic state) {
+  Widget _buildBottomSection(BuildContext context, WidgetRef ref, QuoteState state) {
     final isTabActive = ref.watch(currentTabIndexProvider) == 0;
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
@@ -426,7 +454,7 @@ class _CollectionPickerSheet extends StatelessWidget {
       blurSigma: 12,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
           blurRadius: 24,
           offset: const Offset(0, 10),
         ),
@@ -504,16 +532,20 @@ class _HeaderButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool isDark;
+  final String tooltip;
 
   const _HeaderButton({
     required this.icon,
     required this.onTap,
     required this.isDark,
+    this.tooltip = '',
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
       onTap: onTap,
       child: GlassContainer.adaptive(
         context: context,
@@ -524,6 +556,7 @@ class _HeaderButton extends StatelessWidget {
         opacity: 0.1,
         padding: const EdgeInsets.all(0),
         child: Icon(icon, size: 20, color: isDark ? Colors.white70 : Colors.black54),
+      ),
       ),
     );
   }

@@ -47,7 +47,10 @@ class MoodChips extends ConsumerWidget {
           final isSelected = category == selectedCategory;
           return Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: _MoodChip(
+            child: Semantics(
+              label: '$category category',
+              button: true,
+              child: _MoodChip(
               label: category,
               icon: _moodIcons[category] ?? Icons.auto_awesome_rounded,
               isSelected: isSelected,
@@ -57,6 +60,7 @@ class MoodChips extends ConsumerWidget {
                 ref.read(selectedCategoryProvider.notifier).state = category;
                 ref.read(quoteControllerProvider.notifier).fetchByCategory(category);
               },
+            ),
             ),
           );
         },
@@ -143,7 +147,7 @@ class _MoodChipState extends State<_MoodChip> with SingleTickerProviderStateMixi
             ),
             boxShadow: isSelected ? [
               BoxShadow(
-                color: GradientHelper.primaryColor.withOpacity(0.4),
+                color: GradientHelper.primaryColor.withValues(alpha: 0.4),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),

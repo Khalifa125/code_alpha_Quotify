@@ -34,12 +34,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
               blurRadius: 24,
               offset: const Offset(0, 8),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.15 : 0.03),
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -53,12 +53,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
               height: 64,
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF1E1E1E).withOpacity(0.85)
-                    : Colors.white.withOpacity(0.85),
+                    ? const Color(0xFF1E1E1E).withValues(alpha: 0.85)
+                    : Colors.white.withValues(alpha: 0.85),
                 border: Border.all(
                   color: isDark
-                      ? Colors.white.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.06),
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.06),
                   width: 0.5,
                 ),
               ),
@@ -147,7 +147,12 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
     final inactiveColor = widget.isDark ? const Color(0xFF707075) : const Color(0xFF999999);
     final isActive = widget.isActive;
 
-    return GestureDetector(
+    return Semantics(
+      label: widget.label,
+      button: true,
+      child: Tooltip(
+        message: widget.label,
+        child: GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
         _controller.reverse();
@@ -167,7 +172,7 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
             color: isActive
-                ? activeColor.withOpacity(0.12)
+                ? activeColor.withValues(alpha: 0.12)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
           ),
@@ -226,6 +231,8 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
           ),
         ),
       ),
+    ),
+    ),
     );
   }
 }

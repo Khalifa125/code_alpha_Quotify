@@ -79,11 +79,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final glowColor1 = isDark
-        ? const Color(0xFF8B5CF6).withOpacity(0.22)
-        : const Color(0xFF8B5CF6).withOpacity(0.1);
+        ? const Color(0xFF8B5CF6).withValues(alpha: 0.22)
+        : const Color(0xFF8B5CF6).withValues(alpha: 0.1);
     final glowColor2 = isDark
-        ? const Color(0xFF2563EB).withOpacity(0.18)
-        : const Color(0xFF2563EB).withOpacity(0.08);
+        ? const Color(0xFF2563EB).withValues(alpha: 0.18)
+        : const Color(0xFF2563EB).withValues(alpha: 0.08);
 
     return Scaffold(
       body: Container(
@@ -125,8 +125,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isDark
-                          ? Colors.white.withOpacity(opacities[i] * 0.15)
-                          : const Color(0xFF8B5CF6).withOpacity(opacities[i] * 0.12),
+                          ? Colors.white.withValues(alpha: opacities[i] * 0.15)
+                          : const Color(0xFF8B5CF6).withValues(alpha: opacities[i] * 0.12),
                     ),
                   ),
                 ),
@@ -148,7 +148,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           borderRadius: BorderRadius.circular(22),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF8B5CF6).withOpacity(isDark ? 0.5 : 0.25),
+                              color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.5 : 0.25),
                               blurRadius: isDark ? 40 : 32,
                               offset: const Offset(0, 12),
                             ),
@@ -184,8 +184,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         style: GoogleFonts.lato(
                           fontSize: 10, letterSpacing: 3,
                           color: isDark
-                              ? const Color(0xFFB4A0FF).withOpacity(0.55)
-                              : const Color(0xFF6446B4).withOpacity(0.55),
+                              ? const Color(0xFFB4A0FF).withValues(alpha: 0.55)
+                              : const Color(0xFF6446B4).withValues(alpha: 0.55),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -205,13 +205,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Colors.white.withOpacity(0.06)
-                        : const Color(0xFF7C3AED).withOpacity(0.06),
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : const Color(0xFF7C3AED).withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: isDark
-                          ? Colors.white.withOpacity(0.1)
-                          : const Color(0xFF7C3AED).withOpacity(0.15),
+                          ? Colors.white.withValues(alpha: 0.1)
+                          : const Color(0xFF7C3AED).withValues(alpha: 0.15),
                     ),
                   ),
                   child: Column(
@@ -221,8 +221,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         child: Text('\u201C',
                           style: GoogleFonts.playfairDisplay(fontSize: 20, height: 1,
                             color: isDark
-                                ? const Color(0xFFB499FF).withOpacity(0.6)
-                                : const Color(0xFF7C3AED).withOpacity(0.45),
+                                ? const Color(0xFFB499FF).withValues(alpha: 0.6)
+                                : const Color(0xFF7C3AED).withValues(alpha: 0.45),
                           ),
                         ),
                       ),
@@ -231,8 +231,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         'The only way to do great work is to love what you do.',
                         style: GoogleFonts.lato(fontSize: 10, fontStyle: FontStyle.italic, height: 1.65,
                           color: isDark
-                              ? const Color(0xFFDCD7FF).withOpacity(0.82)
-                              : const Color(0xFF281E5A).withOpacity(0.8),
+                              ? const Color(0xFFDCD7FF).withValues(alpha: 0.82)
+                              : const Color(0xFF281E5A).withValues(alpha: 0.8),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -242,8 +242,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         child: Text('\u2014 Steve Jobs',
                           style: GoogleFonts.lato(fontSize: 9.5, letterSpacing: 0.3,
                             color: isDark
-                                ? const Color(0xFFA08CDC).withOpacity(0.55)
-                                : const Color(0xFF6446B4).withOpacity(0.5),
+                                ? const Color(0xFFA08CDC).withValues(alpha: 0.55)
+                                : const Color(0xFF6446B4).withValues(alpha: 0.5),
                           ),
                         ),
                       ),
@@ -326,8 +326,8 @@ class _LoadingDotsState extends State<_LoadingDots>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(isOn ? 3 : 5),
                 color: isOn
-                    ? (widget.isDark ? const Color(0xFFB496FF).withOpacity(0.95) : const Color(0xFF7C3AED))
-                    : (widget.isDark ? const Color(0xFFA082FF).withOpacity(0.35) : const Color(0xFF7C3AED).withOpacity(0.2)),
+                    ? (widget.isDark ? const Color(0xFFB496FF).withValues(alpha: 0.95) : const Color(0xFF7C3AED))
+                    : (widget.isDark ? const Color(0xFFA082FF).withValues(alpha: 0.35) : const Color(0xFF7C3AED).withValues(alpha: 0.2)),
               ),
             );
           }),

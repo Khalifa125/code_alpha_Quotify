@@ -13,13 +13,15 @@ import '../storage/favorites_storage.dart';
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
 final notificationServiceProvider = Provider<NotificationService>((ref) => NotificationService());
-final widgetServiceProvider = Provider<WidgetService>((ref) => WidgetService());
+final widgetServiceProvider = Provider<WidgetService>((ref) {
+  final service = WidgetService();
+  service.init();
+  return service;
+});
 
 final notificationsEnabledProvider = StateProvider<bool>((ref) => false);
 final notificationHourProvider = StateProvider<int>((ref) => 8);
 final notificationMinuteProvider = StateProvider<int>((ref) => 0);
-final homeWidgetEnabledProvider = StateProvider<bool>((ref) => false);
-
 final selectedCategoryProvider = StateProvider<String>((ref) => 'All');
 
 final showSwipeHintProvider = StateProvider<bool>((ref) => true);
@@ -62,10 +64,6 @@ class FavoritesNotifier extends StateNotifier<List<Quote>> {
     await _storage.removeFavorite(quote);
   }
 
-  Future<void> restoreFavorite(Quote quote) async {
-    state = [quote, ...state];
-    await _storage.addFavorite(quote);
-  }
 }
 
 final favoritesProvider = StateNotifierProvider<FavoritesNotifier, List<Quote>>((ref) {
@@ -191,11 +189,12 @@ class QuoteState {
 
 class QuoteController extends StateNotifier<QuoteState> {
   final QuoteService _service;
+  final WidgetService _widgetService;
   final Random _random = Random();
   final List<Quote> _history = [];
   int _historyIndex = -1;
 
-  QuoteController(this._service) : super(const QuoteState()) {
+  QuoteController(this._service, this._widgetService) : super(const QuoteState()) {
     _init();
   }
 
@@ -228,6 +227,7 @@ class QuoteController extends StateNotifier<QuoteState> {
       _history.removeAt(0);
     }
     _historyIndex = _history.length - 1;
+    _widgetService.updateWidget(quote);
   }
 
   Future<void> fetchQuote() async {
@@ -322,5 +322,6 @@ class QuoteController extends StateNotifier<QuoteState> {
 
 final quoteControllerProvider = StateNotifierProvider<QuoteController, QuoteState>((ref) {
   final service = ref.watch(quoteServiceProvider);
-  return QuoteController(service);
+  final widgetService = ref.watch(widgetServiceProvider);
+  return QuoteController(service, widgetService);
 });

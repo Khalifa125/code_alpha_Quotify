@@ -42,7 +42,7 @@ class QuoteErrorWidget extends StatelessWidget {
       height: 100,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isDark ? Colors.white.withOpacity( 0.05) : Colors.black.withOpacity( 0.03),
+        color: isDark ? Colors.white.withValues(alpha:  0.05) : Colors.black.withValues(alpha:  0.03),
       ),
       child: Icon(
         Icons.wifi_off_rounded,
@@ -89,7 +89,7 @@ class QuoteErrorWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: GradientHelper.primaryColor.withOpacity( 0.4),
+              color: GradientHelper.primaryColor.withValues(alpha:  0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),

@@ -96,12 +96,12 @@ class _NewQuoteButtonState extends State<NewQuoteButton>
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: GradientHelper.primaryColor.withOpacity( 0.45),
+                  color: GradientHelper.primaryColor.withValues(alpha:  0.45),
                   blurRadius: 24,
                   offset: const Offset(0, 12),
                 ),
                 BoxShadow(
-                  color: GradientHelper.secondaryColor.withOpacity( 0.15),
+                  color: GradientHelper.secondaryColor.withValues(alpha:  0.15),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),

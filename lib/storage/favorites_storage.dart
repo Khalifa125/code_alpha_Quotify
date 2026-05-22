@@ -40,9 +40,4 @@ class FavoritesStorage {
     return '${quote.text.hashCode}_${quote.author.hashCode}';
   }
 
-  bool isFavorite(Quote quote) {
-    return _box.containsKey(_generateKey(quote));
-  }
-
-  Future<void> clearAll() async => await _box.clear();
 }

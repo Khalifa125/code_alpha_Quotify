@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/utils/gradient_helper.dart';
 import '../features/quotes/screens/quote_screen.dart';
 import '../features/favorites/screens/favorites_screen.dart';
 import '../features/settings/screens/settings_screen.dart';

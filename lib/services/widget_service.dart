@@ -28,7 +28,4 @@ class WidgetService {
     } catch (_) {}
   }
 
-  Future<void> enableWidget(bool enabled) async {
-    // Widget enable/disable handled by platform
-  }
 }

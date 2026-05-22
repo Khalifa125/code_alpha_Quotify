@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../theme/app_theme.dart';
 import '../../../../core/utils/gradient_helper.dart';
 import '../../../../providers.dart';
 import '../../../../widgets/glass_container.dart';
@@ -240,7 +238,7 @@ class _SettingsTile extends StatelessWidget {
         blurSigma: 8,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -331,7 +329,7 @@ class _NotificationTile extends StatelessWidget {
         blurSigma: 8,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -364,7 +362,7 @@ class _NotificationTile extends StatelessWidget {
               gradient: isEnabled ? GradientHelper.primaryGradient : null,
               color: isEnabled
                   ? null
-                  : (isDark ? Colors.white10 : Colors.black.withOpacity(0.1)),
+                  : (isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.1)),
               borderRadius: BorderRadius.circular(15),
             ),
             child: AnimatedAlign(
@@ -379,7 +377,7 @@ class _NotificationTile extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
+                      color: Colors.black.withValues(alpha: 0.15),
                       blurRadius: 4,
                     ),
                   ],
@@ -439,7 +437,7 @@ class _TimePickerTile extends StatelessWidget {
         blurSigma: 8,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -494,7 +492,7 @@ class _CollectionsTile extends ConsumerWidget {
         blurSigma: 8,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -555,7 +553,7 @@ class _CollectionsManageSheet extends ConsumerWidget {
       blurSigma: 12,
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
           blurRadius: 24,
           offset: const Offset(0, 10),
         ),
@@ -606,8 +604,28 @@ class _CollectionsManageSheet extends ConsumerWidget {
                 ])),
                 GestureDetector(
                   onTap: () {
+                    showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete Collection'),
+                        content: Text('Delete "${c.name}" and remove all its quotes?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                          ),
+                        ],
+                      ),
+                    ).then((confirmed) {
+                      if (confirmed == true) {
                     ref.read(collectionsProvider.notifier).deleteCollection(c.id);
                     HapticFeedback.lightImpact();
+                      }
+                    });
                   },
                   child: GlassContainer.adaptive(
                     context: context,
