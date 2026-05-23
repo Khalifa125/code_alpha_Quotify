@@ -10,6 +10,8 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
     - name: Checkout code
@@ -18,7 +20,7 @@ jobs:
         submodules: false
 
     - name: Setup Java
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
@@ -31,12 +33,11 @@ jobs:
         channel: 'stable'
 
     - name: Cleanup old artifacts
-      if: github.event_name == 'workflow_dispatch'
       continue-on-error: true
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh api /repos/${{ github.repository }}/actions/artifacts --paginate --jq '.artifacts[] | select(.expired == false) | .id' | while read id; do
+        gh api /repos/${{ github.repository }}/actions/artifacts --paginate --jq '.artifacts[].id' | while read id; do
           gh api -X DELETE /repos/${{ github.repository }}/actions/artifacts/$id
         done
 
