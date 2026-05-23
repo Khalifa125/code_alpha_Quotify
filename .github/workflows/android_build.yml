@@ -10,8 +10,6 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
     - name: Checkout code
@@ -31,6 +29,16 @@ jobs:
       with:
         flutter-version: '3.29.0'
         channel: 'stable'
+
+    - name: Cleanup old artifacts
+      if: github.event_name == 'workflow_dispatch'
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh api /repos/${{ github.repository }}/actions/artifacts --paginate --jq '.artifacts[] | select(.expired == false) | .id' | while read id; do
+          gh api -X DELETE /repos/${{ github.repository }}/actions/artifacts/$id
+        done
 
     - name: Get dependencies
       run: flutter pub get
