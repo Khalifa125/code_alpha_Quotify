@@ -24,71 +24,68 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
 
-    return SafeArea(
-      top: false,
-      minimum: const EdgeInsets.only(top: 0),
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
-            ),
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              height: 64,
-              decoration: BoxDecoration(
+    return Container(
+      margin: EdgeInsets.fromLTRB(20, 0, 20, bottomInset > 0 ? 8 : 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            height: 64,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? const Color(0xFF1E1E1E).withValues(alpha: 0.85)
+                  : Colors.white.withValues(alpha: 0.85),
+              border: Border.all(
                 color: isDark
-                    ? const Color(0xFF1E1E1E).withValues(alpha: 0.85)
-                    : Colors.white.withValues(alpha: 0.85),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.black.withValues(alpha: 0.06),
-                  width: 0.5,
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.06),
+                width: 0.5,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _NavItem(
+                  icon: Icons.format_quote_rounded,
+                  label: 'Quote',
+                  isActive: widget.currentIndex == 0,
+                  isDark: isDark,
+                  onTap: () => widget.onTap(0),
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _NavItem(
-                    icon: Icons.format_quote_rounded,
-                    label: 'Quote',
-                    isActive: widget.currentIndex == 0,
-                    isDark: isDark,
-                    onTap: () => widget.onTap(0),
-                  ),
-                  _NavItem(
-                    icon: Icons.favorite_rounded,
-                    label: 'Favorites',
-                    isActive: widget.currentIndex == 1,
-                    isDark: isDark,
-                    badgeCount: widget.favoritesCount,
-                    onTap: () => widget.onTap(1),
-                  ),
-                  _NavItem(
-                    icon: Icons.settings_rounded,
-                    label: 'Settings',
-                    isActive: widget.currentIndex == 2,
-                    isDark: isDark,
-                    onTap: () => widget.onTap(2),
-                  ),
-                ],
-              ),
+                _NavItem(
+                  icon: Icons.favorite_rounded,
+                  label: 'Favorites',
+                  isActive: widget.currentIndex == 1,
+                  isDark: isDark,
+                  badgeCount: widget.favoritesCount,
+                  onTap: () => widget.onTap(1),
+                ),
+                _NavItem(
+                  icon: Icons.settings_rounded,
+                  label: 'Settings',
+                  isActive: widget.currentIndex == 2,
+                  isDark: isDark,
+                  onTap: () => widget.onTap(2),
+                ),
+              ],
             ),
           ),
         ),
@@ -144,7 +141,7 @@ class _NavItemState extends State<_NavItem> with SingleTickerProviderStateMixin 
   @override
   Widget build(BuildContext context) {
     final activeColor = widget.isDark ? const Color(0xFFA78BFA) : const Color(0xFF6366F1);
-    final inactiveColor = widget.isDark ? const Color(0xFF707075) : const Color(0xFF999999);
+    final inactiveColor = widget.isDark ? const Color(0xFF707075) : const Color(0xFF767676);
     final isActive = widget.isActive;
 
     return Semantics(
