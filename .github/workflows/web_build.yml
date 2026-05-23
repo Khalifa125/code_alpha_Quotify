@@ -1,10 +1,6 @@
 name: Build Web
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -41,7 +37,7 @@ jobs:
       run: flutter build web --release
 
     - name: Upload Web Build
-      if: success() && github.event_name == 'workflow_dispatch'
+      if: success()
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:

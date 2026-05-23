@@ -1,10 +1,6 @@
 name: Build Android APK
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -48,7 +44,7 @@ jobs:
       run: flutter build apk --release
 
     - name: Upload APK
-      if: success() && github.event_name == 'workflow_dispatch'
+      if: success()
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
