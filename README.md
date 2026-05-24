@@ -1,112 +1,113 @@
-# Quotify - Daily Quotes
+# Quotify
 
-A premium Flutter daily quotes app with glassmorphism UI, Riverpod state management, and iOS/Android support.
+A beautifully crafted daily quotes app that delivers curated inspiration to your fingertips. Built with Flutter and a glassmorphism design language, Quotify fetches quotes from multiple APIs with a seamless offline fallback — so you always have something meaningful to read, save, and share.
+
+Built as part of an internship program at **CodeAlpha** (May 2026).
+
+---
 
 ## Features
 
-- **Daily Quotes** — Fetch inspiring quotes with one tap, swipe between them
-- **Glassmorphism Design** — Frosted glass cards, blur effects, gradient backgrounds
-- **Mood Categories** — Filter quotes by mood (Motivation, Calm, Love, Success, etc.)
-- **Favorites** — Save quotes, sort by newest/oldest/author/category, search
-- **Collections** — Organize quotes into custom collections
-- **Daily Notifications** — Schedule a daily quote notification at your preferred time
-- **Share** — Share quotes as text or image
-- **Light & Dark Mode** — Full theme support with smooth 300ms transition
-- **Offline Support** — Cached quotes work without internet
-- **Onboarding** — 4-page intro with glass cards and staggered animations
+- 📜 **Daily Quotes** — Fetches from ZenQuotes and Quotable APIs; falls back to a curated offline library of 70+ quotes when offline
+- ❤️ **Favorites & Collections** — Save quotes, organize them into custom collections, sort and search by author or category
+- 📸 **Share as Image** — Capture any quote as a gorgeous styled image and share it anywhere
+- 🌗 **Adaptive Theme** — Dark and light modes with animated transitions and an iOS-fitted bottom nav bar
+- 🔔 **Daily Reminders** — Schedule a daily notification with your favourite quote at a time that suits you
+- 🏠 **Home Widget** — Android home screen widget that shows a fresh quote on every glance
+- 🎨 **Mood Browsing** — Filter quotes by mood or category (Motivated, Calm, Funny, Sad, Love, Success, Growth)
 
-## Tech Stack
+---
 
-| Category | Technology |
-|----------|------------|
-| Framework | Flutter 3.29 (Dart 3.5+) |
-| State | Riverpod (StateNotifier + StateProvider) |
-| Animations | flutter_animate, built-in AnimationController |
-| Typography | Google Fonts (Playfair Display, Lato) |
-| Storage | Hive (favorites), SharedPreferences (settings) |
-| Notifications | flutter_local_notifications + timezone |
-| Sharing | share_plus + screenshot |
+## Built With
 
-## Architecture
+| Layer | Tool |
+|-------|------|
+| Framework | Flutter 3.41 / Dart 3.11 |
+| State Management | flutter_riverpod |
+| Local Storage | hive, shared_preferences |
+| Networking | http |
+| Notifications | flutter_local_notifications, timezone |
+| Typography | google_fonts (Playfair Display + Lato) |
+| Animations | flutter_animate, Lottie-style custom animations |
+| Sharing | share_plus, screenshot |
+| Home Widget | home_widget |
+| Linting | flutter_lints |
 
-```
-lib/
-├── main.dart
-├── providers.dart              # All Riverpod providers
-├── screens/main_screen.dart    # Tab scaffold with AnimatedSwitcher
-├── core/utils/
-│   └── gradient_helper.dart    # Gradients, glass colors, text colors
-├── theme/
-│   └── app_theme.dart          # Light/dark ThemeData with glass-aware themes
-├── models/
-│   ├── quote.dart
-│   └── collection.dart
-├── services/
-│   ├── quote_service.dart      # API fetching with retry + fallback
-│   ├── notification_service.dart
-│   └── widget_service.dart
-├── storage/
-│   └── favorites_storage.dart  # Hive-backed persistence
-├── features/
-│   ├── onboarding/screens/     # OnboardingScreen (PageView + GlassCard)
-│   ├── quotes/
-│   │   ├── screens/            # QuoteScreen (search, mood chips, card)
-│   │   └── widgets/            # ModernQuoteCard, FavoriteButtonWidget
-│   ├── favorites/screens/      # FavoritesScreen (sort, search, glass cards)
-│   └── settings/screens/       # SettingsScreen (theme, notifications, collections)
-└── widgets/
-    ├── glass_container.dart    # GlassContainer, GlassCard, GlassIconContainer
-    ├── bottom_nav_bar.dart     # Glass nav bar with scale animation
-    ├── mood_chips.dart         # Horizontal chip list with spring bounce
-    ├── new_quote_button.dart   # Shimmer button with scale press
-    ├── loading_skeleton.dart   # Shimmer placeholder
-    └── error_widget.dart       # Error state with retry
-```
+---
+
+## Screenshots
+
+| Quote Screen | Favorites | Collections |
+|:---:|:---:|:---:|
+| *Coming soon* | *Coming soon* | *Coming soon* |
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- Flutter SDK 3.29+
-- Dart SDK 3.5+
-- API key (configured via `.env`)
+- Flutter SDK >= 3.29.0
+- Dart SDK >= 3.5.0
+- An Android or iOS device / emulator
 
-### Installation
+### Setup
 
 ```bash
+# Clone the repository
 git clone https://github.com/Khalifa125/code_alpha_Quotify.git
 cd code_alpha_Quotify
+
+# Create environment file
+cp .env.example .env
+
+# Install dependencies
 flutter pub get
-```
 
-Copy `.env.example` to `.env` and add your API key, then run:
-
-```bash
+# Run the app
 flutter run
 ```
 
-### Building
+### Build for release
 
 ```bash
-# Debug APK
-flutter build apk --debug
-
-# Release APK
+# Android APK
 flutter build apk --release
 
-# iOS (requires macOS)
-flutter build ios --release
+# iOS (unsigned, simulator)
+flutter build ios --simulator --no-codesign
+
+# iOS (unsigned, release)
+flutter build ios --release --no-codesign
 ```
 
-## Design System
+---
 
-- **Primary**: `#8B5CF6` (purple) / `#6366F1` (indigo)
-- **Glass** — Cards use `BackdropFilter` + `ImageFilter.blur` (sigma 8-12)
-- **Glass opacity** — Light: 0.3-0.5 frosted white; Dark: 0.04-0.06 subtle tint
-- **Border radius** — Consistent 20px on cards, 14px on buttons
-- **Typography** — Playfair Display for quotes/headlines, Lato for body/UI
-- **Staggered animations** — 500ms fadeIn + slideY with 100-200ms delays
+## Project Structure
+
+```
+lib/
+├── core/utils/          # Gradient helpers, color utilities
+├── data/                # Offline quotes data source
+├── features/
+│   ├── favorites/       # Favorites screen + logic
+│   ├── onboarding/      # First-run onboarding flow
+│   ├── quotes/          # Quote display, modern quote card
+│   ├── settings/        # Theme, notifications, collections
+│   └── splash/          # Animated splash screen
+├── models/              # Quote & Collection data models
+├── screens/             # Main screen with tab navigation
+├── services/            # Quote API, notifications, home widget
+├── storage/             # Hive-based favorites persistence
+├── theme/               # Light & dark theme definitions
+├── widgets/             # Reusable glassmorphism widgets
+├── main.dart            # App entry point
+└── providers.dart       # Centralised Riverpod providers
+```
+
+---
 
 ## License
 
-MIT
+This project is submitted as an internship deliverable for **CodeAlpha**.  
+Not licensed for commercial use.
